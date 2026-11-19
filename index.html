@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
   <meta name="theme-color" content="#10291f">
-  <meta name="description" content="黄鸿钊：国风三路3v3网页游戏，召唤双将，探索野区，攻破十八座防御塔。">
+  <meta name="description" content="黄鸿钊：国风三路6v6网页游戏，召唤双将，探索野区，攻破十八座防御塔。">
   <title>黄鸿钊</title>
   <style>
 @charset "UTF-8";
@@ -54,14 +54,22 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
 }
 @media(max-width:350px){.topbar,.is-touch .topbar{grid-template-columns:minmax(84px,1fr) auto}.brand{display:none}.match-hud{justify-self:start}.toolbar{justify-self:end}.player-strip{gap:5px}.gold-pill{gap:2px}.level-pill{font-size:12px}}
 
+/* Independent death-charge ultimate; kept clear of Q/E/R upgrades and the movement pad. */
+.apocalypse-control{position:absolute;right:max(26px,env(safe-area-inset-right));bottom:270px;display:flex;flex-direction:column;justify-content:center;gap:4px;width:112px;height:58px;margin:0;padding:7px 9px;border:1px solid #a69a805e;border-radius:8px;background:linear-gradient(135deg,#33372b,#172a21);color:#bfc1a5;box-shadow:0 4px 18px #0003;touch-action:manipulation;z-index:8}.apocalypse-main,.apocalypse-sub{display:flex;align-items:center;justify-content:space-between;gap:5px;width:100%;white-space:nowrap}.apocalypse-main strong{font-size:16px;font-weight:500;line-height:1.2;letter-spacing:2px}.apocalypse-main kbd{font:14px inherit;letter-spacing:0;color:#b7baa1}.apocalypse-sub>span{font-size:13px;line-height:1.2;color:#b5b89e}.apocalypse-sub b{font-size:14px;font-weight:500;line-height:1.2;color:#d7cba8}.apocalypse-control.locked{filter:saturate(.65)}.apocalypse-control.ready{border-color:#dfbf84;background:linear-gradient(135deg,#6b4b61,#3e3f35);color:#ffe0a3;box-shadow:0 0 18px #e6b67926,0 4px 18px #0004}.apocalypse-control.ready .apocalypse-sub>span,.apocalypse-control.ready .apocalypse-sub b{color:#f1d89c}.apocalypse-control:active{filter:brightness(1.2)}
+@media(orientation:landscape) and (max-height:620px){.apocalypse-control{right:max(16px,env(safe-area-inset-right));left:auto;bottom:148px;width:96px;height:48px;padding:5px 7px;gap:3px}.apocalypse-main strong{font-size:14px;letter-spacing:1px}.apocalypse-sub>span{font-size:12px}}
+@media(orientation:landscape) and (max-height:360px){.apocalypse-control{bottom:144px}}
+@media(max-width:600px) and (orientation:portrait){.apocalypse-control{left:max(12px,env(safe-area-inset-left));right:auto;bottom:196px;width:104px;height:58px;padding:7px 8px;gap:4px}.apocalypse-main strong{font-size:16px}.apocalypse-sub>span{font-size:13px}}
+@media(max-width:600px) and (orientation:portrait) and (max-height:740px){.apocalypse-control{bottom:178px}}
+@media(max-width:350px) and (orientation:portrait){.apocalypse-control{width:88px;padding-left:6px;padding-right:6px}.apocalypse-sub>span{font-size:12px}}
+
 </style>
 </head>
 <body>
-<main id="game" aria-label="黄鸿钊，三路3v3游戏">
-  <canvas id="arena" aria-label="战场：WASD移动，J普攻，QER技能，P商店，点击小地图自动前往"></canvas>
+<main id="game" aria-label="黄鸿钊，三路6v6游戏">
+  <canvas id="arena" aria-label="战场：WASD移动，J普攻，QER技能，F痛哭终极，P商店，点击小地图自动前往"></canvas>
   <div class="vignette" aria-hidden="true"></div>
   <header class="topbar">
-    <div class="brand"><span class="seal">黄</span><div><strong>黄鸿钊</strong><small>三路争锋 · 3V3</small></div></div>
+    <div class="brand"><span class="seal">黄</span><div><strong>黄鸿钊</strong><small>三路争锋 · 6V6</small></div></div>
     <div class="match-hud"><div class="team blue"><span>我方</span><b id="blue-score">0</b></div><div class="clock"><span id="timer">00:00</span><small id="match-difficulty">困难</small></div><div class="team red"><b id="red-score">0</b><span>敌方</span></div></div>
     <nav class="toolbar" aria-label="战局工具"><button id="shop-btn" class="shop-toggle" title="商店 P"><span>商店</span><b id="shop-gold">0 金</b></button><button id="help-btn" title="操作说明" aria-label="操作说明">?</button><button id="fullscreen-btn" title="全屏" aria-label="切换全屏">⛶</button><button id="pause-btn" title="暂停 Esc" aria-label="暂停">Ⅱ</button></nav>
   </header>
@@ -79,6 +87,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
     </section>
   </aside>
   <div class="joystick" id="joystick" aria-label="移动摇杆"><div class="joystick-ring"></div><div class="joystick-thumb" id="joystick-thumb"></div></div>
+  <button id="apocalypse-btn" class="apocalypse-control locked" aria-label="痛哭充能0/5，陈博涵与蔡佳浩合计被击杀5次后可召唤蔡骏博" aria-disabled="true"><span class="apocalypse-main"><strong>痛哭</strong><kbd>F</kbd></span><span class="apocalypse-sub"><span>蔡骏博</span><b id="apocalypse-charge">0 / 5</b></span></button>
   <div class="combat-controls">
     <div class="skill-points"><span id="skill-points">可用技能点：1</span><small>点＋学习或升级</small></div>
     <div class="actions">
@@ -90,15 +99,15 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       </div>
       <button class="attack action" id="attack-btn" aria-label="扇风普通攻击 J"><span>风</span><small>普攻 J</small></button>
     </div>
-    <div class="keyboard-hint"><span><kbd>WASD</kbd> 移动</span><span><kbd>J</kbd> 普攻</span><span><kbd>P</kbd> 商店</span><span><kbd>1 2 3</kbd> 升技能</span></div>
+    <div class="keyboard-hint"><span><kbd>WASD</kbd> 移动</span><span><kbd>J</kbd> 普攻</span><span><kbd>P</kbd> 商店</span><span><kbd>F</kbd> 痛哭</span><span><kbd>1 2 3</kbd> 升技能</span></div>
   </div>
   <div class="landscape-tip">横屏视野更开阔</div>
   <section id="start-screen" class="overlay start-overlay">
-    <div class="intro"><div class="eyebrow">国风三路 · 3V3</div><h1>黄<span>鸿钊</span></h1><p class="intro-line">一扇御风，双将争雄。</p><p class="intro-copy">三路兵线，十八座塔。<br>游走野区、争夺大龙，与你的人机队友并肩破阵。</p><div class="feature-tags"><span>15级成长</span><span>技能加点</span><span>六槽装备</span></div><fieldset class="difficulty-field"><legend>选择对手强度</legend><div id="difficulty-options"><button type="button" data-difficulty="normal" aria-pressed="false">普通<small>熟悉战场</small></button><button type="button" data-difficulty="hard" class="selected" aria-pressed="true">困难<small>协同攻防</small></button><button type="button" data-difficulty="expert" aria-pressed="false">高手<small>极限挑战</small></button></div></fieldset><button class="primary" id="start-btn">进入战场</button><button class="text-btn" id="start-help">操作与玩法</button></div>
-    <div class="start-decoration" aria-hidden="true"><span>黄</span><span>鸿钊</span><div>三路入局 · 御风而行</div></div><footer class="intro-footer"><span>1 名玩家 · 5 名自主 AI</span><span>三路 / 野区 / 大龙 / 装备</span></footer>
+    <div class="intro"><div class="eyebrow">国风三路 · 6V6</div><h1>黄<span>鸿钊</span></h1><p class="intro-line">一扇御风，双将争雄。</p><p class="intro-copy">三路兵线，十八座塔。<br>游走野区、争夺大龙，与你的人机队友并肩破阵。</p><div class="feature-tags"><span>15级成长</span><span>技能加点</span><span>六槽装备</span></div><fieldset class="difficulty-field"><legend>选择对手强度</legend><div id="difficulty-options"><button type="button" data-difficulty="normal" aria-pressed="false">普通<small>熟悉战场</small></button><button type="button" data-difficulty="hard" class="selected" aria-pressed="true">困难<small>协同攻防</small></button><button type="button" data-difficulty="expert" aria-pressed="false">高手<small>极限挑战</small></button></div></fieldset><button class="primary" id="start-btn">进入战场</button><button class="text-btn" id="start-help">操作与玩法</button></div>
+    <div class="start-decoration" aria-hidden="true"><span>黄</span><span>鸿钊</span><div>三路入局 · 御风而行</div></div><footer class="intro-footer"><span>1 名玩家 · 11 名自主 AI</span><span>三路 / 野区 / 大龙 / 装备</span></footer>
   </section>
   <section id="pause-screen" class="overlay modal-overlay hidden" aria-labelledby="pause-title"><div class="modal"><span class="eyebrow">歇息片刻</span><h2 id="pause-title">战局已暂停</h2><p>所有英雄、野怪与战场计时均已暂停。</p><button class="primary" id="resume-btn">继续对战</button><button class="secondary" id="paused-shop-btn">查看装备商店</button><button class="text-btn centered" id="restart-btn">重新开始本局</button></div></section>
-  <section id="help-screen" class="overlay modal-overlay hidden" aria-labelledby="help-title"><div class="modal help-modal"><span class="eyebrow">战场手册</span><h2 id="help-title">三路推进，借势破阵</h2><p>双方各有九座防御塔。沿任意一路依次摧毁三座敌塔，打开水晶防线，击破水晶即获胜。地图点击地点可自动前往，手动移动会取消。</p><div class="help-grid"><div><strong>电脑操作</strong><p>WASD / 方向键移动，鼠标瞄准<br>J / 按住鼠标普攻，Q E R 技能<br>数字 1 / 2 / 3 学习或升级技能<br>P 商店，B 回城，Esc 暂停</p></div><div><strong>手机操作</strong><p>左侧摇杆移动，右侧普攻与技能<br>点技能上方的＋分配技能点<br>点商店购买装备，点小地图前往<br>召唤物会自主寻找敌人</p></div></div><div class="help-notes"><p><b>成长：</b>最高15级，每次升级获得技能点。大招在4 / 8 / 12级提升；普通技能最多6级。</p><p><b>装备：</b>金币手动购买，最多六件；同一时间限一双靴子。出售返还70%金币，商店可随时打开，购物期间战局暂停。</p><p><b>野区：</b>击败野怪获得经验金币和红蓝增益。大龙开局30秒出现，击败后全队获得增益并强化兵线。</p><p><b>阵容：</b>你操控黄鸿钊，队友为剑盾、火法；敌方为长枪、琴音、巨刃。E召唤陈博涵近战输出，R召唤蔡佳浩冲锋抱控。</p></div><button class="primary" id="close-help">准备好了</button></div></section>
+  <section id="help-screen" class="overlay modal-overlay hidden" aria-labelledby="help-title"><div class="modal help-modal"><span class="eyebrow">战场手册</span><h2 id="help-title">三路推进，借势破阵</h2><p>双方各有九座防御塔。沿任意一路依次摧毁三座敌塔，打开水晶防线，击破水晶即获胜。地图点击地点可自动前往，手动移动会取消。</p><div class="help-grid"><div><strong>电脑操作</strong><p>WASD / 方向键移动，鼠标瞄准<br>J / 按住鼠标普攻，Q E R 技能<br>F 痛哭（独立终极）<br>数字 1 / 2 / 3 学习或升级技能<br>P 商店，B 回城，Esc 暂停</p></div><div><strong>手机操作</strong><p>左侧摇杆移动，右侧普攻与技能<br>点技能上方的＋分配技能点<br>点商店购买装备，点小地图前往<br>召唤物攻击最近敌人，也会攻击野怪</p></div></div><div class="help-notes"><p><b>成长：</b>最高15级，每次升级获得技能点。大招在4 / 8 / 12级提升；普通技能最多6级。</p><p><b>装备：</b>金币手动购买，最多六件；同一时间限一双靴子。出售返还70%金币，商店可随时打开，购物期间战局暂停。</p><p><b>野区：</b>击败野怪获得经验金币和红蓝增益。大龙开局30秒出现，击败后全队获得增益并强化兵线。</p><p><b>阵容：</b>6对6。你操控黄鸿钊，友军为剑盾战士、火焰法师、李白、韩信、后羿；敌军为长枪战士、治疗辅助、重装坦克、张飞、关羽、刘备。E召唤陈博涵近战输出，R召唤蔡佳浩冲锋抱控；两位召唤物寻找最近敌方单位，包括野怪。</p><p><b>独立终极「痛哭」：</b>陈博涵与蔡佳浩合计被击杀5次后可释放；寿命结束或主动替换不计。点击独立按钮或按F召唤蔡骏博，将附近敌方单位拉近并控制5秒。释放消耗5次充能，之后重新累计；不消耗技能点，也不受4级大招学习限制。</p></div><button class="primary" id="close-help">准备好了</button></div></section>
   <section id="shop-screen" class="overlay shop-overlay hidden" aria-labelledby="shop-title">
     <div class="shop-modal"><header class="shop-header"><div><span class="eyebrow">装备商店</span><h2 id="shop-title">集百器，定胜局</h2></div><div class="shop-balance">可用金币 <b id="shop-balance">0</b></div><button id="close-shop" class="close-btn" aria-label="关闭商店">×</button></header><p id="shop-pause-note" class="shop-pause-note">购物期间战局暂停 · 关闭后继续</p><div class="shop-layout"><nav id="shop-categories" class="shop-categories" aria-label="装备分类"></nav><div id="shop-products" class="shop-products" aria-label="可购买装备"></div><aside class="shop-detail"><div id="item-detail"></div><div class="shop-purchase"><button class="primary" id="buy-item">购买装备</button><button class="secondary hidden" id="sell-item">出售装备</button><p id="shop-feedback" role="status"></p></div></aside></div><footer class="shop-inventory"><div><strong>已装备 <span id="inventory-count">0 / 6</span></strong><small>点选装备可出售，返还原价70%</small></div><div id="shop-slots" class="shop-slots" aria-label="已装备的六个位置"></div></footer></div>
   </section>
@@ -1329,21 +1338,43 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       Object.assign(this.state.player, { name: '黄鸿钊', archetype: 'huang', role: '召唤系术士',
         attackRange: 300, skillMaxCds: [10, 18, 26], skillNames: ['鼓舞', '召唤陈博涵', '召唤蔡佳浩'] });
       super.configureAIHeroes();
-      const assignments = [1, 0, 2, 0, 1, 2];
+      const additions = [
+        { team: 0, archetype: 'libai', role: '剑客刺客', maxHp: 960, attackRange: 85, attackDamage: 54, speed: 245, r: 20,
+          skillMaxCds: [8, 10, 22], skillNames: ['将进酒', '神来之笔', '青莲剑歌'] },
+        { team: 0, archetype: 'hanxin', role: '游击枪士', maxHp: 1040, attackRange: 90, attackDamage: 53, speed: 248, r: 21,
+          skillMaxCds: [8, 9, 20], skillNames: ['无情冲锋', '背水一战', '国士无双'] },
+        { team: 0, archetype: 'houyi', role: '远程弓手', maxHp: 870, attackRange: 380, attackDamage: 52, attackInterval: 0.65, speed: 215, r: 20,
+          skillMaxCds: [9, 8, 24], skillNames: ['多重箭', '落日余晖', '灼日之矢'] },
+        { team: 1, archetype: 'zhangfei', role: '护阵坦克', maxHp: 1500, attackRange: 95, attackDamage: 52, speed: 208, r: 25,
+          skillMaxCds: [8, 10, 24], skillNames: ['画地为牢', '守护机关', '狂兽血性'] },
+        { team: 1, archetype: 'guanyu', role: '冲锋骑士', maxHp: 1280, attackRange: 105, attackDamage: 57, speed: 242, r: 24,
+          skillMaxCds: [8, 10, 22], skillNames: ['单刀赴会', '青龙偃月', '刀锋铁骑'] },
+        { team: 1, archetype: 'liubei', role: '近阵散弹手', maxHp: 1120, attackRange: 240, attackDamage: 57, speed: 227, r: 22,
+          skillMaxCds: [8, 9, 24], skillNames: ['双重射击', '身先士卒', '以德服人'] }
+      ];
+      additions.forEach((definition, index) => {
+        const hero = super.createHero(definition.team, 3 + index % 3);
+        Object.assign(hero, definition, { name: '人机' + (index + 6), hp: definition.maxHp });
+        this.state.heroes.push(hero);
+      });
+      const assignments = [1, 0, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2];
       this.state.heroes.forEach((hero, index) => {
         const home = this.basePoint(hero.team);
-        Object.assign(hero, { x: home.x + (hero.team === 0 ? 55 : -55) + (index % 3 - 1) * 38,
-          y: home.y + (hero.team === 0 ? -55 : 55) + (index % 3 - 1) * 38,
+        Object.assign(hero, { x: home.x + (hero.team === 0 ? 55 : -55) + (hero.slot % 3 - 1) * 46 + Math.floor(hero.slot / 3) * 42,
+          y: home.y + (hero.team === 0 ? -55 : 55) + (hero.slot % 3 - 1) * 46 - Math.floor(hero.slot / 3) * 42,
           laneId: assignments[index], homeLaneId: assignments[index],
           skillRanks: [0, 0, 0], skillPoints: 1, skillCds: [0, 0, 0],
           baseSkillCds: hero.skillMaxCds.slice(), inventory: [], itemSlots: 6,
           gold: 450, totalGold: 450, upgrades: 0, redBuffTimer: 0, blueBuffTimer: 0, bossBuffTimer: 0,
-          moveTarget: null, targetId: null, thinkTimer: 0, shopTimer: 0, jungleId: null, jungleTimer: 0 });
+          moveTarget: null, targetId: null, thinkTimer: 0, shopTimer: 0, jungleId: null, jungleTimer: 0,
+          cryTimer: 0, crySourceId: null, evasionTimer: 0, transformTimer: 0,
+          rapidTimer: 0, empowerShotTimer: 0, furyTimer: 0, immunityTimer: 0 });
         hero.baseStats = { hp: hero.maxHp, attack: hero.attackDamage, speed: hero.speed + 18,
           attackInterval: hero.attackInterval || 0.72 };
         this.recalculateStats(hero, true);
         if (!hero.isPlayer) this.learnAI(hero);
       });
+      Object.assign(this.state.player, { summonDeaths: 0, totalSummonDeaths: 0, apocalypseReady: false });
       this.createCamps();
       this.updateStructureShields();
       return this.state;
@@ -1549,10 +1580,11 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
         hero.totalGold += dt * 3;
         hero.xp += dt * 1.2;
         this.checkLevel(hero);
-        hero.attackCd = Math.max(0, hero.attackCd - dt * (hero.attackBuffTimer > 0 ? 1.45 : 1));
+        hero.attackCd = Math.max(0, hero.attackCd - dt * (hero.attackBuffTimer > 0 ? 1.45 : 1) * (hero.rapidTimer > 0 ? 1.35 : 1));
         hero.skillCds = hero.skillCds.map(cd => Math.max(0, cd - dt));
         for (const field of ['healCd', 'slowTimer', 'hurtTimer', 'attackBuffTimer', 'stunTimer', 'silenceTimer', 'rootTimer', 'speedBuffTimer',
-          'damageReductionTimer', 'damageOutputReductionTimer', 'shieldTimer', 'redBuffTimer', 'blueBuffTimer', 'bossBuffTimer']) hero[field] = Math.max(0, (hero[field] || 0) - dt);
+          'damageReductionTimer', 'damageOutputReductionTimer', 'shieldTimer', 'redBuffTimer', 'blueBuffTimer', 'bossBuffTimer',
+          'evasionTimer', 'transformTimer', 'rapidTimer', 'empowerShotTimer', 'furyTimer', 'immunityTimer', 'sweepTimer', 'comboLockTimer']) hero[field] = Math.max(0, (hero[field] || 0) - dt);
         if (hadBlueBuff && hero.blueBuffTimer <= 0) this.recalculateStats(hero);
         if (hero.shieldTimer <= 0) hero.shieldHp = 0;
         if (!hero.alive) {
@@ -1561,8 +1593,13 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
           continue;
         }
         hero.hp = Math.min(hero.maxHp, hero.hp + dt * (distance(hero, this.fountain(hero.team)) < 165 ? 210 : hero.regen));
+        this.tickCry(hero, dt);
         this.tickHeroAbilities(hero, dt);
-        if (hero.stunTimer > 0) { hero.action = hero.grabbedBy ? '被抱住' : '眩晕'; this.cancelRecall(hero); continue; }
+        if (hero.stunTimer > 0 && !(hero.cryTimer > 0)) {
+          if (hero.archetype === 'guanyu') this.castSkill(hero, 1, { x: hero.x + hero.facingX * 180, y: hero.y + hero.facingY * 180 });
+          if (hero.archetype === 'liubei') this.castSkill(hero, 2, { x: hero.x, y: hero.y });
+        }
+        if (hero.stunTimer > 0) { hero.action = hero.grabbedBy ? '被抱住' : hero.cryTimer > 0 ? '痛哭控制' : '眩晕'; this.cancelRecall(hero); continue; }
         if (hero.isPlayer) this.updatePlayer(hero, input, dt); else this.updateAI(hero, dt);
       }
       for (const minion of s.minions) {
@@ -1578,7 +1615,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       for (const summon of s.summons) {
         const owner = s.heroes.find(h => h.id === summon.ownerId);
         this._contextLane = owner ? owner.laneId : 1;
-        super.updateSummon(summon, dt);
+        this.updateSummon(summon, dt);
       }
       this._contextLane = 1;
       for (const monster of s.monsters) this.updateMonster(monster, dt);
@@ -1591,6 +1628,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       s.projectiles = s.projectiles.filter(p => p.alive).slice(-500);
       if (s.effects.length > 240) s.effects = s.effects.slice(-240);
       if (s.zones.length > 32) s.zones = s.zones.slice(-32);
+      this.refreshApocalypse();
       return s;
     }
 
@@ -1605,6 +1643,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
         else { const v = direction(hero.moveTarget.x - hero.x, hero.moveTarget.y - hero.y); modified.moveX = v.x; modified.moveY = v.y; }
       }
       if (input.heal) { hero.moveTarget = null; modified.moveX = 0; modified.moveY = 0; }
+      if (input.apocalypse) this.castApocalypse();
       this._playerTargeting = true;
       super.updatePlayer(hero, modified, dt);
       this._playerTargeting = false;
@@ -1614,7 +1653,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
 
     enemies(team) {
       const units = this.state.heroes.concat(this.state.minions, this.state.summons, this.state.structures)
-        .filter(e => e.alive && e.team !== team && !e.shielded);
+        .filter(e => e.alive && e.team !== team && !e.shielded && !(e.evasionTimer > 0));
       const nearbyMonsters = this.state.monsters.filter(m => m.alive &&
         (this._combatCampId === m.id || (this._playerTargeting && distance(m, this.state.player) < 650) ||
          (m.mode === 'chase' && this.state.heroes.concat(this.state.summons).some(h => h.team === team && h.id === m.aggroId))));
@@ -1641,13 +1680,14 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       hero.aiClock += dt;
       hero.shopTimer -= dt;
       if (hero.skillPoints > 0) this.learnAI(hero);
+      if (hero === this.state.player && hero.summonDeaths >= 5 && this.state.heroes.some(h => h.alive && h.team !== hero.team && distance(h, hero) < 325)) this.castApocalypse();
       if (hero.shopTimer <= 0) {
         hero.shopTimer = 2;
         const recommendation = this.recommendedItems(hero);
         const next = recommendation.find(id => !hero.inventory.includes(id));
         if (next) this.buyItem(next, hero);
       }
-      if (hero.channelTimer > 0) { hero.action = '引导光束'; return; }
+      if (hero.channelTimer > 0 || hero.comboLockTimer > 0) { hero.action = hero.channelTimer > 0 ? '引导光束' : '连续攻击'; return; }
       const hard = this.state.difficulty !== 'normal';
       if (hero.hp < hero.maxHp * (this.state.difficulty === 'expert' ? 0.34 : hard ? 0.28 : 0.2)) hero.retreating = true;
       if (hero.hp > hero.maxHp * 0.9) hero.retreating = false;
@@ -1680,7 +1720,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       if (target && target.type === 'monster') this._combatCampId = target.id;
       this.updateAISkills(hero, target);
       this._combatCampId = null;
-      if (hero.channelTimer > 0) return;
+      if (hero.channelTimer > 0 || hero.comboLockTimer > 0) return;
       const ranged = hero.attackRange > 200;
       if (target) {
         hero.action = target.type === 'monster' ? target.kind === 'boss' ? '争夺巨龙' : '清理野区' : '交战';
@@ -1719,7 +1759,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
     }
 
     chooseAIStrategy(hero, hard) {
-      const enemyUnits = this.state.heroes.concat(this.state.minions, this.state.summons).filter(e => e.alive && e.team !== hero.team && distance(e, hero) < 580);
+      const enemyUnits = this.state.heroes.concat(this.state.minions, this.state.summons).filter(e => e.alive && e.team !== hero.team && !(e.evasionTimer > 0) && distance(e, hero) < 580);
       enemyUnits.sort((a, b) => {
         const threatA = a.type === 'hero' ? -100 : 0, threatB = b.type === 'hero' ? -100 : 0;
         return distance(a, hero) + threatA + a.hp / a.maxHp * 80 - distance(b, hero) - threatB - b.hp / b.maxHp * 80;
@@ -1770,6 +1810,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       monster.attackCd = Math.max(0, monster.attackCd - dt);
       monster.hurtTimer = Math.max(0, monster.hurtTimer - dt);
       this.tickUnitDebuffs(monster, dt);
+      if (monster.stunTimer > 0 || monster.rootTimer > 0) return;
       const home = { x: monster.homeX, y: monster.homeY };
       let target = this.allEntities().find(e => e.id === monster.aggroId && e.alive && e.team >= 0 && e.type !== 'structure');
       if (monster.warning) {
@@ -1843,6 +1884,11 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
           if (segmentDistance(target, oldX, oldY, p.x, p.y) > target.r + p.r) continue;
           this.damage(owner, target, p.damage, 'skill');
           if (p.hitControl) this.applyControl(owner, target, p.hitControl.type, p.hitControl.duration);
+          if (p.impactExplosion) {
+            for (const other of entities.filter(e => e.alive && e.team !== p.team && !e.shielded && distance(e, target) < p.impactExplosion.r + e.r))
+              this.damage(owner, other, p.impactExplosion.damage, 'skill');
+            this.effect('sunExplosion', target.x, target.y, p.impactExplosion.r, '#f3c77d', .65);
+          }
           if (p.impactZone) {
             const zone = Object.assign({ x: target.x, y: target.y, team: p.team, ownerId: p.ownerId,
               tickTimer: 0, maxLife: p.impactZone.life }, p.impactZone);
@@ -1857,12 +1903,14 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
     }
 
     damage(source, target, amount, kind) {
-      if (!target.alive || target.team === source.team || this.state.winner !== null || target.shielded) return;
+      if (!target.alive || target.team === source.team || this.state.winner !== null || target.shielded || target.evasionTimer > 0) return;
       const owner = this.creditOwner(source);
       const isSkill = kind === 'skill';
       const magical = isSkill && ['huang', 'angela', 'caiwenji'].includes(owner.archetype);
       if (owner.type === 'hero' && isSkill) amount += (owner.magicPower || 0) * 0.12;
       if (source.bossBuffTimer > 0) amount *= 1.15;
+      if (source.furyTimer > 0) amount *= 1.25;
+      if (source.transformTimer > 0 && !isSkill) amount *= 1.25;
       if (source.damageOutputReductionTimer > 0) amount *= 1 - source.damageOutputReduction;
       if (target.type === 'tower' || target.type === 'core') {
         const wave = this.state.minions.some(m => m.alive && m.team === source.team && distance(m, target) < 355);
@@ -1896,9 +1944,20 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
     kill(source, target) {
       if (!target.alive) return;
       target.alive = false;
+      target.cryTimer = 0;
+      target.crySourceId = null;
       const owner = this.creditOwner(source), killerTeam = source.team >= 0 ? source.team : null;
       this.effect('death', target.x, target.y, target.r + 30, target.team === -1 ? '#dac393' : COLORS[target.team], 0.5);
-      if (target.type === 'summon') { this.releaseGrab(target); return; }
+      if (target.type === 'summon') {
+        this.releaseGrab(target);
+        if (['chen', 'cai'].includes(target.summonKind) && target.ownerId === this.state.player.id) {
+          this.state.player.summonDeaths++;
+          this.state.player.totalSummonDeaths++;
+          this.refreshApocalypse();
+          this.state.message = target.name + '战死，终极充能 ' + this.state.player.summonDeaths + ' / 5';
+        }
+        return;
+      }
       if (target.type === 'monster') {
         target.respawnTimer = target.respawnTime;
         target.aggroId = null; target.mode = 'idle'; target.warning = null;
@@ -1920,6 +1979,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
         target.respawnTimer = 6 + Math.min(14, target.level * 0.7 + this.state.time / 150);
         target.action = '等待复活'; target.retreating = false; target.moveTarget = null;
         target.stunTimer = 0; target.grabbedBy = null; target.stunSourceId = null; target.recallTimer = 0; target.shieldHp = 0;
+        target.rootTimer = 0; target.evasionTimer = 0;
         for (const field of ['channelTimer', 'orbitTimer', 'burstTimer', 'healAuraTimer', 'songTimer']) target[field] = 0;
         this.state.effects = this.state.effects.filter(e => e.followsId !== target.id && !(e.type === 'beam' && e.ownerId === target.id));
         if (killerTeam !== null) {
@@ -1931,6 +1991,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
           }
         }
         this.state.message = (source.name || '战场单位') + ' 击败了 ' + target.name;
+        this.refreshApocalypse();
       } else if (target.type === 'minion') {
         if (killerTeam !== null) for (const hero of this.state.heroes) if (hero.alive && hero.team === killerTeam && distance(hero, target) < 780)
           this.reward(hero, target.cannon ? 60 : 38, hero.id === owner.id ? target.cannon ? 45 : 24 : target.cannon ? 28 : 16);
@@ -1964,11 +2025,257 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       const home = this.fountain(hero.team);
       hero.x = home.x; hero.y = home.y; hero.moveTarget = null; hero.jungleId = null;
       hero.damageOutputReductionTimer = 0; hero.damageReductionTimer = 0;
+      hero.cryTimer = 0; hero.crySourceId = null;
+      this.refreshApocalypse();
     }
 
     castSkill(hero, index, aim) {
       if (!hero.skillRanks || hero.skillRanks[index] < 1) return false;
+      const canCleanse = (hero.archetype === 'guanyu' && index === 1 || hero.archetype === 'liubei' && index === 2) && !(hero.cryTimer > 0);
+      if (canCleanse && hero.alive && hero.skillCds[index] <= 0 && !(hero.silenceTimer > 0)) return this.castArchetypeSkill(hero, index, aim);
+      if (hero.comboLockTimer > 0) return false;
       return super.castSkill(hero, index, aim);
+    }
+
+    castArchetypeSkill(hero, index, aim) {
+      if (!['libai', 'hanxin', 'houyi', 'zhangfei', 'guanyu', 'liubei'].includes(hero.archetype)) return super.castArchetypeSkill(hero, index, aim);
+      aim = aim || { x: hero.x + hero.facingX * 200, y: hero.y + hero.facingY * 200 };
+      const v = direction(aim.x - hero.x, aim.y - hero.y);
+      hero.facingX = v.x; hero.facingY = v.y;
+      hero.skillCds[index] = hero.skillMaxCds[index];
+      const power = 1 + (hero.level - 1) * .035 + Math.max(0, hero.skillRanks[index] - 1) * .08;
+      const harm = value => Math.round(value * power);
+      const start = { x: hero.x, y: hero.y };
+      if (hero.archetype === 'libai') {
+        if (index === 0) {
+          this.dashTo(hero, aim, 225);
+          this.visual('wineDash', hero, { x: start.x, y: start.y, x2: hero.x, y2: hero.y, r: 44 }, .45);
+          this.lineStrike(hero, start.x, start.y, hero.x, hero.y, 44, harm(75), 'stun', .45);
+        } else if (index === 1) {
+          hero.evasionTimer = .45;
+          this.visual('lotusRing', hero, { r: 150, color: '#b1d7da' }, .7);
+          this.areaStrike(hero, hero.x, hero.y, 150, harm(65), 'slow', 1.6);
+        } else {
+          hero.swordDanceTimer = 1;
+          hero.swordDanceTick = 0;
+          hero.swordDanceRemaining = 5;
+          hero.evasionTimer = 1;
+          hero.comboLockTimer = .95;
+          this.visual('lotusSlash', hero, { r: 185, followsId: hero.id }, 1);
+        }
+      } else if (hero.archetype === 'hanxin') {
+        if (index === 0) {
+          this.dashTo(hero, aim, 220);
+          this.visual('hanxinLeap', hero, { r: 100 }, .55);
+          this.areaStrike(hero, hero.x, hero.y, 100, harm(75), 'stun', .6);
+        } else if (index === 1) {
+          this.dashTo(hero, { x: hero.x - v.x * 180, y: hero.y - v.y * 180 }, 180);
+          hero.sweepTimer = 5;
+          this.visual('backstep', hero, { x: start.x, y: start.y, x2: hero.x, y2: hero.y, r: 40 }, .4);
+        } else {
+          hero.spearStormTimer = .85;
+          hero.spearStormTick = 0;
+          hero.spearStormRemaining = 4;
+          hero.damageReduction = .3; hero.damageReductionTimer = 1;
+          hero.comboLockTimer = .8;
+          this.visual('spearStorm', hero, { r: 150, followsId: hero.id }, .9);
+        }
+      } else if (hero.archetype === 'houyi') {
+        if (index === 0) {
+          hero.rapidTimer = 5;
+          this.visual('arrowVolley', hero, { r: 75, followsId: hero.id }, .7);
+        } else if (index === 1) {
+          const d = Math.min(540, distance(hero, aim)), x = hero.x + v.x * d, y = hero.y + v.y * d;
+          this.visual('sunlight', hero, { x, y, r: 130, color: '#f6d28b' }, .75);
+          this.areaStrike(hero, x, y, 130, harm(90), 'slow', 1.8);
+        } else {
+          const arrow = this.linearProjectile(hero, 'sunArrow', Math.atan2(v.y, v.x), 700, 2, 22, harm(120), '#f5cb83');
+          arrow.hitControl = { type: 'stun', duration: 1.1 };
+          arrow.impactExplosion = { r: 120, damage: harm(45) };
+        }
+      } else if (hero.archetype === 'zhangfei') {
+        if (index === 0) {
+          this.visual('guardianSweep', hero, { r: 145 }, .6);
+          for (const target of this.areaStrike(hero, hero.x, hero.y, 145, harm(65))) this.knockUnit(target, direction(target.x - hero.x, target.y - hero.y), 75);
+        } else if (index === 1) {
+          this.dashTo(hero, aim, 185);
+          this.visual('guardianLeap', hero, { r: 205 }, .7);
+          for (const ally of this.state.heroes.filter(h => h.alive && h.team === hero.team && distance(h, hero) <= 205)) {
+            ally.shieldHp = Math.max(ally.shieldHp, Math.round(160 * power)); ally.shieldTimer = Math.max(3, ally.shieldTimer);
+          }
+        } else {
+          hero.transformTimer = 10; hero.shieldHp += Math.round(500 * power); hero.shieldTimer = 10;
+          const endX = hero.x + v.x * 450, endY = hero.y + v.y * 450;
+          this.visual('beastRoar', hero, { x2: endX, y2: endY, r: 95 }, .8);
+          for (const target of this.lineStrike(hero, hero.x, hero.y, endX, endY, 95, harm(105), 'stun', .8)) this.knockUnit(target, v, 115);
+        }
+      } else if (hero.archetype === 'guanyu') {
+        if (index === 0) {
+          const charged = (hero.chargeMeter || 0) >= 1;
+          this.visual('cavalryCleave', hero, { r: 165 }, .65);
+          for (const target of this.areaStrike(hero, hero.x, hero.y, 165, harm(charged ? 130 : 90))) if (charged) this.knockUnit(target, v, 70);
+          if (charged) hero.chargeMeter = 0;
+        } else if (index === 1) {
+          this.cleanse(hero);
+          hero.speedBuffMult = 1.35; hero.speedBuffTimer = 3;
+          this.dashTo(hero, aim, 180);
+          this.visual('cavalryLeap', hero, { r: 110 }, .65);
+          this.areaStrike(hero, hero.x, hero.y, 110, harm(65));
+        } else {
+          this.dashTo(hero, aim, 310);
+          this.visual('cavalryCharge', hero, { x: start.x, y: start.y, x2: hero.x, y2: hero.y, r: 90 }, .7);
+          for (const target of this.lineStrike(hero, start.x, start.y, hero.x, hero.y, 90, harm(115), 'stun', .55)) this.knockUnit(target, v, 135);
+          hero.speedBuffMult = 1.2; hero.speedBuffTimer = 3; hero.chargeMeter = 0;
+        }
+      } else if (hero.archetype === 'liubei') {
+        if (index === 0) {
+          hero.speedBuffMult = 1.25; hero.speedBuffTimer = 3;
+          hero.empowerShotTimer = 5; hero.doubleShotCharges = 2;
+          this.visual('shotgunBuff', hero, { r: 75, followsId: hero.id }, .75);
+        } else if (index === 1) {
+          this.dashTo(hero, aim, 190);
+          this.visual('shotgunRam', hero, { x: start.x, y: start.y, x2: hero.x, y2: hero.y, r: 65 }, .45);
+          this.lineStrike(hero, start.x, start.y, hero.x, hero.y, 65, harm(80), 'stun', .6);
+        } else {
+          this.cleanse(hero);
+          hero.shieldHp = Math.max(hero.shieldHp, Math.round(320 * power)); hero.shieldTimer = 6;
+          hero.immunityTimer = 6; hero.furyTimer = 6;
+          this.visual('shotgunRally', hero, { r: 130 }, .9);
+        }
+      }
+      return true;
+    }
+
+    areaStrike(hero, x, y, r, amount, control, duration) {
+      const targets = this.enemies(hero.team).filter(e => distance(e, { x, y }) <= r + e.r);
+      for (const target of targets) {
+        this.damage(hero, target, amount, 'skill');
+        if (control) this.applyControl(hero, target, control, duration);
+      }
+      return targets;
+    }
+
+    lineStrike(hero, x, y, x2, y2, r, amount, control, duration) {
+      const targets = this.enemies(hero.team).filter(e => segmentDistance(e, x, y, x2, y2) <= r + e.r);
+      for (const target of targets) {
+        this.damage(hero, target, amount, 'skill');
+        if (control) this.applyControl(hero, target, control, duration);
+      }
+      return targets;
+    }
+
+    knockUnit(target, v, amount) {
+      if (!target.alive || target.type === 'tower' || target.type === 'core' || target.cryTimer > 0) return;
+      target.x = clamp(target.x + v.x * amount, 65, W - 65);
+      target.y = clamp(target.y + v.y * amount, 65, H - 65);
+    }
+
+    cleanse(hero) {
+      if (hero.cryTimer > 0) return false;
+      if (hero.grabbedBy) {
+        const grabber = this.state.summons.find(s => s.id === hero.grabbedBy);
+        if (grabber) this.releaseGrab(grabber);
+      }
+      hero.stunTimer = hero.rootTimer = hero.slowTimer = hero.silenceTimer = 0;
+      hero.stunSourceId = null;
+      return true;
+    }
+
+    applyControl(source, target, type, duration) {
+      if (target.immunityTimer > 0 && target.shieldHp > 0 && source.summonKind !== 'junbo') return;
+      return super.applyControl(source, target, type, duration);
+    }
+
+    tickHeroAbilities(hero, dt) {
+      super.tickHeroAbilities(hero, dt);
+      if (hero.stunTimer > 0 || hero.silenceTimer > 0) {
+        hero.swordDanceRemaining = 0; hero.spearStormRemaining = 0;
+      }
+      const power = 1 + (hero.level - 1) * .035 + Math.max(0, (hero.skillRanks && hero.skillRanks[2] || 1) - 1) * .08;
+      if (hero.swordDanceTimer > 0 && hero.swordDanceRemaining > 0) {
+        hero.swordDanceTimer = Math.max(0, hero.swordDanceTimer - dt); hero.swordDanceTick -= dt;
+        if (hero.swordDanceTick <= 0) {
+          hero.swordDanceTick += .18; hero.swordDanceRemaining--;
+          this.areaStrike(hero, hero.x, hero.y, 185, Math.round(32 * power));
+          this.visual('lotusSlash', hero, { r: 185 }, .22);
+        }
+      }
+      if (hero.spearStormTimer > 0 && hero.spearStormRemaining > 0) {
+        hero.spearStormTimer = Math.max(0, hero.spearStormTimer - dt); hero.spearStormTick -= dt;
+        if (hero.spearStormTick <= 0) {
+          hero.spearStormTick += .18; hero.spearStormRemaining--;
+          this.areaStrike(hero, hero.x, hero.y, 150, Math.round(30 * power), hero.spearStormRemaining === 0 ? 'stun' : null, .65);
+          this.visual('spearStorm', hero, { r: 150 }, .2);
+        }
+      }
+    }
+
+    basicAttack(attacker, target) {
+      const melee = ['libai', 'hanxin', 'zhangfei', 'guanyu'].includes(attacker.archetype);
+      const archer = attacker.archetype === 'houyi', shotgun = attacker.archetype === 'liubei';
+      if (!melee && !archer && !shotgun) return super.basicAttack(attacker, target);
+      if (!attacker.alive || !target.alive || attacker.attackCd > 0 || attacker.stunTimer > 0 || attacker.recallTimer > 0 || attacker.comboLockTimer > 0 || target.shielded) return false;
+      attacker.attackCd = attacker.attackInterval;
+      const v = direction(target.x - attacker.x, target.y - attacker.y);
+      attacker.facingX = v.x; attacker.facingY = v.y;
+      if (melee) {
+        let damage = attacker.attackDamage;
+        if (attacker.archetype === 'guanyu' && attacker.chargeMeter >= 1) { damage *= 1.5; attacker.chargeMeter = 0; this.knockUnit(target, v, 55); }
+        if (attacker.archetype === 'hanxin' && attacker.sweepTimer > 0) {
+          damage += 45; attacker.sweepTimer = 0;
+          for (const other of this.enemies(attacker.team).filter(e => e.id !== target.id && distance(e, attacker) < 160)) this.damage(attacker, other, attacker.attackDamage * .7, 'physical');
+        }
+        this.damage(attacker, target, damage, 'physical');
+        this.visual('melee', attacker, { x2: target.x, y2: target.y, r: attacker.attackRange }, .2);
+      } else {
+        let damage = attacker.attackDamage;
+        if (shotgun && attacker.empowerShotTimer > 0 && attacker.doubleShotCharges > 0) { damage *= 1.4; attacker.doubleShotCharges--; }
+        this.makeProjectile(attacker, target, Math.round(damage), { type: archer ? 'arrow' : 'shotgun', speed: 830, r: archer ? 5 : 7, color: archer ? '#f5cc85' : '#edc68d', homing: true });
+        if (archer && attacker.rapidTimer > 0) {
+          const extras = this.enemies(attacker.team).filter(e => e.id !== target.id && e.type !== 'tower' && e.type !== 'core' && distance(e, target) < 240)
+            .sort((a, b) => distance(a, attacker) - distance(b, attacker)).slice(0, 2);
+          for (const other of extras) this.makeProjectile(attacker, other, Math.round(damage * .6), { type: 'arrow', speed: 830, r: 4, color: '#f5cc85', homing: true });
+        }
+      }
+      return true;
+    }
+
+    updateAISkills(hero, target) {
+      if (!['libai', 'hanxin', 'houyi', 'zhangfei', 'guanyu', 'liubei'].includes(hero.archetype)) return super.updateAISkills(hero, target);
+      if (hero.aiClock < .4 || hero.stunTimer > 0 || hero.silenceTimer > 0 || hero.comboLockTimer > 0) return;
+      const valid = target && target.alive && target.type !== 'tower' && target.type !== 'core';
+      const d = valid ? distance(hero, target) : Infinity;
+      const aim = valid ? { x: target.x, y: target.y } : { x: hero.x, y: hero.y };
+      if (hero.archetype === 'zhangfei') {
+        const hurt = this.state.heroes.find(h => h.alive && h.team === hero.team && h.hp < h.maxHp * .78 && distance(hero, h) < 220);
+        if (hurt) this.castSkill(hero, 1, { x: hurt.x, y: hurt.y });
+      }
+      if (!valid) return;
+      if (hero.archetype === 'libai') {
+        if (d > 95 && d < 360) this.castSkill(hero, 0, aim);
+        if (distance(hero, target) < 175) this.castSkill(hero, 1, aim);
+        if (target.type === 'hero' && distance(hero, target) < 205) this.castSkill(hero, 2, aim);
+      } else if (hero.archetype === 'hanxin') {
+        if (d > 100 && d < 370) this.castSkill(hero, 0, aim);
+        if (distance(hero, target) < 100 && hero.hp < hero.maxHp * .7) this.castSkill(hero, 1, aim);
+        if (target.type === 'hero' && distance(hero, target) < 175) this.castSkill(hero, 2, aim);
+      } else if (hero.archetype === 'houyi') {
+        if (d < 480) this.castSkill(hero, 0, aim);
+        if (d < 560) this.castSkill(hero, 1, aim);
+        if (target.type === 'hero' && d > 180 && d < 1000) this.castSkill(hero, 2, aim);
+      } else if (hero.archetype === 'zhangfei') {
+        if (d < 175) this.castSkill(hero, 0, aim);
+        if (d > 160 && d < 370) this.castSkill(hero, 1, aim);
+        if (target.type === 'hero' && distance(hero, target) < 430) this.castSkill(hero, 2, aim);
+      } else if (hero.archetype === 'guanyu') {
+        if (d < 195) this.castSkill(hero, 0, aim);
+        if (d > 160 && d < 370) this.castSkill(hero, 1, aim);
+        if (target.type === 'hero' && distance(hero, target) < 470) this.castSkill(hero, 2, aim);
+      } else if (hero.archetype === 'liubei') {
+        if (d < 400) this.castSkill(hero, 0, aim);
+        if (d > 90 && d < 340) this.castSkill(hero, 1, aim);
+        if (target.type === 'hero' && d < 420 && hero.hp < hero.maxHp * .8) this.castSkill(hero, 2, aim);
+      }
     }
 
     spawnSummon(owner, kind) {
@@ -1978,7 +2285,129 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       summon.maxHp = Math.round(summon.maxHp * scale); summon.hp = summon.maxHp;
       summon.attackDamage = Math.round(summon.attackDamage * scale); summon.damage = summon.attackDamage;
       summon.laneId = owner.laneId;
+      const nearest = this.summonTargets(summon)[0];
+      summon.lockTargetId = nearest ? nearest.id : null;
+      this.state.message = '黄鸿钊召唤了' + summon.name + (kind === 'chen' ? '，攻击最近的敌人与野怪' : '，冲锋抱住最近的可控制目标');
       return summon;
+    }
+
+    summonTargets(summon) {
+      return this.allEntities().filter(unit => unit.alive && unit.team !== summon.team && !(unit.evasionTimer > 0) &&
+        unit.id !== summon.id && !unit.shielded).sort((a, b) => distance(a, summon) - distance(b, summon));
+    }
+
+    updateSummon(summon, dt) {
+      if (!summon.alive) return;
+      summon.life = Math.max(0, summon.life - dt);
+      summon.attackCd = Math.max(0, summon.attackCd - dt * (summon.attackBuffTimer > 0 ? 1.45 : 1));
+      summon.attackBuffTimer = Math.max(0, summon.attackBuffTimer - dt);
+      summon.hurtTimer = Math.max(0, summon.hurtTimer - dt);
+      this.tickUnitDebuffs(summon, dt);
+      if (summon.life <= 0) {
+        summon.alive = false;
+        this.releaseGrab(summon);
+        this.effect('death', summon.x, summon.y, summon.r + 25, summon.summonKind === 'junbo' ? '#8c82a5' : COLORS[summon.team], 0.4);
+        return;
+      }
+      if (summon.summonKind === 'junbo') { summon.action = '痛哭'; return; }
+      if (summon.stunTimer > 0) { this.releaseGrab(summon); summon.action = '眩晕'; return; }
+      if (summon.phase === 'holding') {
+        const held = this.allEntities().find(u => u.id === summon.grabbedTargetId && u.alive);
+        summon.grabTimer = Math.max(0, summon.grabTimer - dt);
+        if (!held || summon.grabTimer <= 0) this.releaseGrab(summon);
+        else {
+          summon.x = held.x + (summon.team === 0 ? -18 : 18); summon.y = held.y + 4;
+          summon.action = '抱住控制';
+          if (summon.attackCd <= 0) this.basicAttack(summon, held);
+          return;
+        }
+      }
+      const target = this.summonTargets(summon)[0];
+      summon.lockTargetId = target ? target.id : null;
+      if (!target) {
+        const owner = this.state.heroes.find(h => h.id === summon.ownerId);
+        summon.action = '跟随';
+        if (owner && distance(owner, summon) > 75) this.walkTo(summon, owner.x, owner.y, dt);
+        return;
+      }
+      const grabbable = target.type !== 'tower' && target.type !== 'core' && !(target.immunityTimer > 0 && target.shieldHp > 0);
+      if (summon.summonKind === 'cai' && !summon.grabUsed && grabbable && distance(summon, target) <= summon.r + target.r + 16) {
+        summon.phase = 'holding'; summon.grabUsed = true; summon.grabbedTargetId = target.id; summon.grabTimer = 2;
+        this.applyControl(summon, target, 'stun', 2); target.grabbedBy = summon.id;
+        this.effect('grab', target.x, target.y, 52, '#b6a7df', 0.6);
+        this.state.message = '蔡佳浩抱住了' + target.name + '，控制2秒';
+        return;
+      }
+      if (summon.summonKind === 'cai' && !summon.grabUsed && grabbable) {
+        summon.phase = 'charge'; summon.action = '冲锋';
+        this.walkTo(summon, target.x, target.y, dt);
+        return;
+      }
+      summon.phase = 'fight';
+      summon.action = '攻击' + (target.name || '目标');
+      if (this.inAttackRange(summon, target)) this.basicAttack(summon, target);
+      else this.walkTo(summon, target.x, target.y, dt);
+    }
+
+    releaseGrab(summon) {
+      if (!summon || !summon.grabbedTargetId) return;
+      const target = this.allEntities().find(u => u.id === summon.grabbedTargetId);
+      if (target) {
+        if (target.stunSourceId === summon.id) { target.stunTimer = 0; target.stunSourceId = null; }
+        if (target.grabbedBy === summon.id) target.grabbedBy = null;
+      }
+      summon.grabTimer = 0; summon.grabbedTargetId = null; summon.phase = 'fight'; summon.action = '近战攻击';
+    }
+
+    refreshApocalypse() {
+      const p = this.state.player;
+      if (p) p.apocalypseReady = p.alive && this.state.winner === null && p.summonDeaths >= 5;
+    }
+
+    castApocalypse() {
+      const p = this.state.player;
+      if (!p.alive || this.state.winner !== null || p.summonDeaths < 5 || p.stunTimer > 0 || p.silenceTimer > 0) return false;
+      p.summonDeaths -= 5;
+      this.cancelRecall(p);
+      const summon = { id: this.nextId++, type: 'summon', summonKind: 'junbo', name: '蔡骏博', role: '终极死神',
+        team: p.team, ownerId: p.id, x: clamp(p.x + p.facingX * 45, 65, W - 65),
+        y: clamp(p.y + p.facingY * 45, 65, H - 65), r: 30, hp: 1400 + p.level * 45,
+        maxHp: 1400 + p.level * 45, alive: true, life: 7, maxLife: 7, speed: 0,
+        attackDamage: 0, damage: 0, attackRange: 0, attackInterval: 1, attackCd: 0,
+        attackBuffTimer: 0, hurtTimer: 0, facingX: p.facingX, facingY: p.facingY,
+        cryRadius: 340, cryDuration: 5, laneId: p.laneId, action: '痛哭' };
+      this.state.summons.push(summon);
+      const victims = this.allEntities().filter(u => u.alive && u.team !== p.team &&
+        u.type !== 'tower' && u.type !== 'core' && distance(u, summon) <= 340);
+      victims.forEach((victim, index) => {
+        const angle = Math.atan2(victim.y - summon.y, victim.x - summon.x) + index * 0.25;
+        const radius = 55 + index % 3 * 20;
+        victim.x = clamp(summon.x + Math.cos(angle) * radius, 65, W - 65);
+        victim.y = clamp(summon.y + Math.sin(angle) * radius, 65, H - 65);
+        victim.cryTimer = 5; victim.crySourceId = summon.id;
+        victim.cryAnchorX = victim.x; victim.cryAnchorY = victim.y;
+        this.applyControl(summon, victim, 'stun', 5);
+        this.applyControl(summon, victim, 'root', 5);
+        this.cancelRecall(victim);
+      });
+      this.visual('apocalypse', p, { x: summon.x, y: summon.y, r: 340, color: '#171424' }, 0.9);
+      this.state.effects.push({ type: 'cry', ownerId: summon.id, x: summon.x, y: summon.y, r: 340,
+        color: '#74678e', life: 5, maxLife: 5 });
+      this.state.message = '终极降临：蔡骏博痛哭，附近敌人与野怪被拉拢并控制5秒';
+      this.refreshApocalypse();
+      return true;
+    }
+
+    tickCry(unit, dt) {
+      if (!(unit.cryTimer > 0)) return;
+      unit.cryTimer = Math.max(0, unit.cryTimer - dt);
+      if (unit.cryTimer > 0) { unit.x = unit.cryAnchorX; unit.y = unit.cryAnchorY; }
+      else unit.crySourceId = null;
+    }
+
+    tickUnitDebuffs(unit, dt) {
+      super.tickUnitDebuffs(unit, dt);
+      this.tickCry(unit, dt);
     }
 
     castPlayerSkill(hero, index, aim) {
@@ -2000,7 +2429,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
     }
 
     separateUnits(dt) {
-      const units = this.state.heroes.concat(this.state.minions, this.state.summons).filter(u => u.alive && !u.grabbedBy && u.phase !== 'holding');
+      const units = this.state.heroes.concat(this.state.minions, this.state.summons).filter(u => u.alive && !u.grabbedBy && !(u.cryTimer > 0) && u.phase !== 'holding');
       const buckets = new Map(), size = 70;
       for (const unit of units) {
         const gx = Math.floor(unit.x / size), gy = Math.floor(unit.y / size);
@@ -2023,8 +2452,9 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
     }
 
     move(unit, mx, my, dt) {
-      if (unit.rootTimer > 0 || unit.stunTimer > 0 || unit.channelTimer > 0) return;
+      if (unit.rootTimer > 0 || unit.stunTimer > 0 || unit.channelTimer > 0 || unit.comboLockTimer > 0) return;
       const speed = unit.speed * (unit.slowTimer > 0 ? 0.65 : 1) * (unit.speedBuffTimer > 0 ? unit.speedBuffMult : 1);
+      if (unit.archetype === 'guanyu') unit.chargeMeter = Math.min(1, (unit.chargeMeter || 0) + Math.hypot(mx, my) * speed * dt / 650);
       unit.x = clamp(unit.x + mx * speed * dt, 65, W - 65);
       unit.y = clamp(unit.y + my * speed * dt, 65, H - 65);
     }
@@ -2032,6 +2462,10 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
 
   global.GameEngine = ThreeLaneGame;
 })(typeof window !== 'undefined' ? window : globalThis);
+
+</script><script>
+window.HUANG_FACE_DATA_URL="data:image/png;base64,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";
+window.HUANG_FACE_CROP={x:0,y:0,width:160,height:160};
 
 </script><script>
 /* Jade Lane — original environment and user-approved miniature character designs. */
@@ -2213,6 +2647,13 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
     c.fill();
   }
 
+  function tear(c, x, y, size, color = '#6f8d9a') {
+    c.beginPath(); c.moveTo(x, y - size);
+    c.bezierCurveTo(x - size * .35, y - size * .25, x - size * .9, y + size * .6, x, y + size * .65);
+    c.bezierCurveTo(x + size * .9, y + size * .6, x + size * .35, y - size * .25, x, y - size);
+    c.fillStyle = color; c.fill();
+  }
+
   function rock(c, x, y, size, random) {
     c.save();
     c.translate(x, y);
@@ -2308,6 +2749,8 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       this.camera = { x: 800, y: 2800, scale: 1 };
       this.started = false;
       this.lastTime = -1;
+      this.faceImage = null;
+      this.faceImageSource = '';
       this.map = document.createElement('canvas');
       this.map.width = Math.round(WORLD_W * this.mapScale);
       this.map.height = Math.round(WORLD_H * this.mapScale);
@@ -2632,6 +3075,38 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       c.restore();
     }
 
+    prepareHuangFace() {
+      if (this.faceImage && (this.faceImage.naturalWidth || this.faceImage.width) > 0) return this.faceImage;
+      const source = window.HUANG_FACE_DATA_URL;
+      if (!source || this.faceImageSource === source || typeof Image === 'undefined') return this.faceImage;
+      this.faceImageSource = source;
+      const photo = new Image();
+      this.faceImage = photo;
+      photo.src = source;
+      return photo;
+    }
+
+    huangPhotoHead(c, facing) {
+      const photo = this.prepareHuangFace();
+      const pw = photo?.naturalWidth || photo?.width || 0;
+      const ph = photo?.naturalHeight || photo?.height || 0;
+      if (!pw || !ph) { characterHead(c, 0, -31, 8.5, 10, 'young'); return; }
+      const crop = window.HUANG_FACE_CROP || { x: 0, y: 0, width: pw, height: ph };
+      const sx = clamp(crop.x, 0, pw - 1), sy = clamp(crop.y, 0, ph - 1);
+      const sw = Math.max(1, Math.min(crop.width, pw - sx));
+      const sh = Math.max(1, Math.min(crop.height, ph - sy));
+      // Keep the transparent portrait's original proportions inside the oval.
+      const fit = Math.min(32 / sw, 36 / sh), dw = sw * fit, dh = sh * fit;
+      c.save(); c.translate(0, -31);
+      // The body may face left, while the original photograph keeps its orientation.
+      c.scale(facing, 1);
+      c.beginPath(); c.ellipse(0, 0, 16, 18, 0, 0, Math.PI * 2); c.clip();
+      c.drawImage(photo, sx, sy, sw, sh, -dw / 2, -dh / 2, dw, dh);
+      c.restore();
+      c.strokeStyle = '#d5bc908c'; c.lineWidth = .65;
+      c.beginPath(); c.ellipse(0, -31, 16, 18, 0, 0, Math.PI * 2); c.stroke();
+    }
+
     character(c, unit, kind, time) {
       const moving = /移动|推进|撤回|跟随|归队|冲锋/.test(unit.action || '') && !(unit.stunTimer > 0 || unit.recallTimer > 0);
       const step = moving ? Math.sin(time * 11 + (unit.id || 0) * .7) : 0;
@@ -2646,8 +3121,10 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       c.scale(facing * modelScale, modelScale);
       c.lineJoin = 'round';
       c.lineCap = 'round';
-      if (['arthur', 'angela', 'zhaoyun', 'caiwenji', 'xiangyu'].includes(kind)) {
-        this.aiCharacter(c, kind, step, swing, time);
+      if (['arthur', 'angela', 'zhaoyun', 'caiwenji', 'xiangyu', 'libai', 'hanxin', 'houyi', 'zhangfei', 'guanyu', 'liubei'].includes(kind)) {
+        this.aiCharacter(c, kind, step, swing, time, unit);
+      } else if (kind === 'junbo') {
+        this.junboCharacter(c, unit, time, step);
       } else if (kind === 'huang') {
         // A slight, youthful scholar silhouette: long vermilion robe and open fan.
         clothLimb(c, [[-5, 10], [-6 - step * 2, 21]], 6, '#293730', '#65715b');
@@ -2706,7 +3183,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
           c.strokeStyle = '#f2dfa6a6'; c.lineWidth = 1;
           c.beginPath(); c.arc(armX + 4, armY - 1, 22, -Math.PI * .82, -Math.PI * .2); c.stroke();
         }
-        characterHead(c, 0, -31, 8.5, 10, 'young');
+        this.huangPhotoHead(c, facing);
       } else if (kind === 'chen') {
         // The taller black-clad fighter has a narrow waist and longer legs.
         clothLimb(c, [[-5, -1], [-6 - step * 2.5, 12], [-7 + step * 2, 23]], 7, '#202a29', '#4b5950');
@@ -2784,8 +3261,11 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       c.restore();
     }
 
-    aiCharacter(c, kind, step, swing, time) {
+    aiCharacter(c, kind, step, swing, time, unit) {
       // Original miniature silhouettes adapted from the requested hero references.
+      if (['libai', 'hanxin', 'houyi', 'zhangfei', 'guanyu', 'liubei'].includes(kind)) {
+        this.newAICharacter(c, unit, kind, step, swing, time); return;
+      }
       const armor = (vertices, color = '#a7b8b2', edge = '#d3c58d') => poly(c, vertices, color, edge, 1.3);
       if (kind === 'arthur') {
         poly(c, [[-12, -28], [15, -26], [21 + step, 17], [-19, 19]], '#3c4862', '#78808a', 1);
@@ -2922,6 +3402,176 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       }
     }
 
+    newAICharacter(c, unit, kind, step, swing, time) {
+      const plate = (v, color, edge = '#c9c194') => poly(c, v, color, edge, 1.2);
+      if (kind === 'guanyu') {
+        c.save(); c.scale(.84, .84);
+        // An animated warhorse and a green-robed rider form a distinct wide silhouette.
+        c.strokeStyle = '#334139'; c.lineWidth = 9; c.lineCap = 'round';
+        c.beginPath(); c.moveTo(-31, 3); c.bezierCurveTo(-55, -6, -57, 17, -49, 29); c.stroke();
+        for (const [lx, phase] of [[-27, 1], [-13, -1], [16, -1], [29, 1]]) {
+          clothLimb(c, [[lx, 13], [lx + step * phase * 6, 29], [lx - step * phase * 3, 41]], 7, '#866747', '#b59463');
+          ellipse(c, lx - step * phase * 3 + 2, 42, 6, 3, '#29372f');
+        }
+        ellipse(c, -2, 7, 39, 20, '#9c7b51');
+        plate([[-25, -5], [17, -7], [22, 12], [-28, 14]], '#3c7455', '#d0b777');
+        plate([[22, 2], [28, -23], [37, -30], [48, -21], [49, -7], [36, 13]], '#a08459', '#d0bc8a');
+        plate([[37, -26], [51, -17], [59, -12], [59, -3], [47, 0], [40, -8]], '#b39566', '#d4c397');
+        plate([[29, -24], [29, -41], [35, -28]], '#9b8055');
+        plate([[41, -28], [45, -40], [47, -22]], '#9b8055');
+        ellipse(c, 45, -19, 3, 2, '#253a2e'); ellipse(c, 57, -8, 2, 1.5, '#4b5039');
+        c.strokeStyle = '#d8bf83'; c.lineWidth = 1.5;
+        c.beginPath(); c.moveTo(42, -24); c.lineTo(46, -4); c.lineTo(56, -5); c.moveTo(44, -8); c.lineTo(14, -23); c.stroke();
+        poly(c, [[-22, -38], [10, -37], [16, -6], [-7, 8], [-31 - step * 2, 6]], '#356e4b', '#a0b27b', 1.3);
+        plate([[-13, -41], [11, -40], [13, -15], [-8, -10], [-18, -22]], '#477b51', '#d4c184');
+        plate([[-17, -38], [-7, -46], [0, -36], [-7, -28], [-20, -30]], '#9a9c65');
+        plate([[12, -38], [4, -46], [-1, -36], [5, -28], [18, -29]], '#9a9c65');
+        clothLimb(c, [[11, -34], [23, -25], [29, -33]], 7, '#467f50', '#c2bd81');
+        c.save(); c.translate(28, -32); c.rotate(-.36 + swing * .8);
+        clothLimb(c, [[-23, 15], [40, -24]], 3.5, '#6d6142', '#d6bd7b');
+        plate([[33, -26], [43, -43], [62, -48], [59, -27], [43, -17]], '#c8d2bb', '#e1d49e');
+        poly(c, [[39, -30], [54, -41], [51, -28], [42, -22]], '#85a79c'); c.restore();
+        characterHead(c, -3, -52, 9, 10, 'tall');
+        poly(c, [[-10, -45], [-5, -47], [2, -45], [1, -28], [-3, -20], [-9, -30]], '#23372c', '#87936b', .8);
+        plate([[-14, -56], [-7, -65], [3, -64], [9, -55], [5, -51], [-4, -55]], '#467953', '#d5bd78');
+        ellipse(c, -3, -58, 2.5, 3, '#c9b572');
+        c.restore(); return;
+      }
+      const heavy = kind === 'zhangfei';
+      const legSpace = heavy ? 11 : 6;
+      const boots = kind === 'libai' ? '#506764' : '#293b37';
+      for (const side of [-1, 1]) {
+        clothLimb(c, [[side * legSpace, 0], [side * legSpace + step * side * 2, 22]], heavy ? 12 : 7, boots, '#9aa58a');
+        ellipse(c, side * legSpace + step * side * 2 + side, 24, heavy ? 8 : 5.5, 3, '#243831');
+      }
+      if (kind === 'libai') {
+        poly(c, [[-10, -26], [7, -26], [7, 4], [-17 - step * 2, 19], [-24 - step * 2, 9]], '#d9e0d5', '#9eb8ac', 1);
+        poly(c, [[-11, -28], [10, -28], [9, -7], [17, 16], [1, 21], [-15, 16], [-10, -7]], '#e8e9d5', '#adc2b6', 1.3);
+        poly(c, [[-8, -26], [0, -17], [7, -27], [2, -11]], '#526f6a');
+        c.strokeStyle = '#a1c1b0'; c.lineWidth = 1.2;
+        c.beginPath(); c.moveTo(2, -13); c.lineTo(7, 16); c.moveTo(-9, 0); c.lineTo(-11, 12); c.stroke();
+        roundRect(c, -10, -5, 21, 5, 2); c.fillStyle = '#527d75'; c.fill();
+        poly(c, [[7, -3], [12, -2], [18 + step, 18], [12 + step, 16]], '#6b9e8f');
+        clothLimb(c, [[-10, -22], [-17, -12], [-15, -2]], 8, '#d9e4d7', '#edf0d8'); ellipse(c, -14, 0, 3.2, 3.5, '#e8bb96');
+        clothLimb(c, [[10, -22], [18, -12], [24 + swing * 7, -10 - swing * 5]], 8, '#dfe5d4', '#f1efd9');
+        c.save(); c.translate(25 + swing * 8, -10 - swing * 5); c.rotate(-.8 + swing * 1.05);
+        plate([[-2, 4], [-2, -29], [0, -41], [3, -29], [3, 4]], '#dce9dd', '#9fb9b2');
+        c.fillStyle = '#b7aa6c'; c.fillRect(-8, 3, 17, 3); clothLimb(c, [[1, 8], [1, 14]], 3.5, '#66543c'); c.restore();
+        characterHead(c, 0, -37, 8.2, 10, 'young');
+        c.strokeStyle = '#527b72'; c.lineWidth = 2; c.beginPath(); c.moveTo(-5, -48); c.quadraticCurveTo(-20, -45, -21 - step, -31); c.stroke();
+        ellipse(c, -11, 3, 3, 4, '#9d8052'); ellipse(c, -11, 8, 5, 5, '#aa8d5a');
+      } else if (kind === 'hanxin') {
+        poly(c, [[-8, -30], [6, -29], [2, -1], [-17 - step * 3, 14], [-20, 3]], '#a23d3f', '#d88970', 1);
+        plate([[-11, -28], [11, -28], [13, -12], [7, 3], [-7, 3], [-13, -12]], '#d7dbcd', '#efdeaa');
+        plate([[-7, -24], [0, -28], [7, -24], [4, -9], [0, -5], [-4, -9]], '#963f40', '#d3ad7b');
+        plate([[-20, -26], [-11, -34], [-3, -26], [-9, -17], [-21, -18]], '#e1dfc9');
+        plate([[20, -26], [11, -34], [3, -26], [9, -17], [21, -18]], '#e1dfc9');
+        roundRect(c, -9, -3, 18, 4, 1); c.fillStyle = '#b77551'; c.fill();
+        clothLimb(c, [[-12, -21], [-18, -10], [-10, -1]], 7, '#b65349', '#e5c49b');
+        clothLimb(c, [[12, -21], [20, -9], [25 + swing * 9, -3 - swing * 5]], 7, '#b65349', '#e5c49b');
+        c.save(); c.translate(23 + swing * 13, -3); c.rotate(-.4 - swing * .25);
+        clothLimb(c, [[-35, 0], [39, 0]], 3.2, '#86593e', '#dbc48c');
+        plate([[34, -4], [52, 0], [34, 4], [38, 0]], '#e9e9cf', '#c2b58f');
+        poly(c, [[33, 2], [20 - step, 12], [23, 2]], '#c54842'); c.restore();
+        characterHead(c, 0, -37, 8.2, 10, 'tall');
+        plate([[-10, -42], [-4, -48], [2, -43], [10, -44], [10, -37], [4, -39]], '#d1d9d0');
+        c.strokeStyle = '#c04847'; c.lineWidth = 4; c.beginPath(); c.moveTo(-2, -47); c.bezierCurveTo(-5, -64, -20, -59, -22 - step * 2, -41); c.stroke();
+      } else if (kind === 'houyi') {
+        poly(c, [[-11, -28], [10, -27], [13, 16], [-18 - step, 13]], '#66774a', '#aaa66d', 1);
+        plate([[-12, -28], [12, -28], [13, -10], [8, 3], [-8, 3], [-13, -10]], '#b49c56', '#e6d394');
+        plate([[-7, -24], [0, -29], [7, -24], [4, -9], [0, -4], [-4, -9]], '#d8bc72', '#f2dda4');
+        plate([[-19, -27], [-11, -34], [-3, -26], [-8, -18], [-20, -18]], '#beaa65');
+        plate([[19, -27], [11, -34], [3, -26], [8, -18], [20, -18]], '#beaa65');
+        plate([[-10, -2], [0, 0], [-4, 11], [-12, 9]], '#a98a4c'); plate([[10, -2], [0, 0], [4, 11], [12, 9]], '#a98a4c');
+        clothLimb(c, [[-11, -22], [-17, -9], [2 - swing * 4, -9]], 7, '#7d7951', '#d6c184');
+        clothLimb(c, [[11, -22], [20, -11], [28, -9]], 7, '#8c8552', '#e1cf96');
+        c.strokeStyle = '#e5ca7a'; c.lineWidth = 3.2;
+        c.beginPath(); c.moveTo(27, -42); c.bezierCurveTo(49, -30, 31, -19, 28, -9); c.bezierCurveTo(33, 1, 48, 12, 27, 24); c.stroke();
+        c.strokeStyle = '#f2dda6'; c.lineWidth = .9;
+        c.beginPath(); c.moveTo(27, -42); c.lineTo(18 - swing * 8, -9); c.lineTo(27, 24); c.stroke();
+        c.strokeStyle = '#dddbba'; c.lineWidth = 1.5; c.beginPath(); c.moveTo(4 - swing * 7, -9); c.lineTo(51, -9); c.stroke();
+        plate([[47, -12], [56, -9], [47, -6]], '#e1dfb3');
+        characterHead(c, 0, -37, 8.5, 10, 'tall');
+        plate([[-10, -41], [-6, -48], [0, -43], [7, -48], [10, -40], [4, -39]], '#c6ad66', '#f1d99b');
+        poly(c, [[-5, -45], [-15, -57], [-9, -53], [0, -46]], '#d2b95e');
+      } else if (kind === 'zhangfei') {
+        const transformed = (unit?.transformTimer || unit?.beastTimer || 0) > 0;
+        poly(c, [[-20, -29], [20, -29], [27 + step, 20], [-27 - step, 18]], '#822e35', '#a9584e', 1);
+        plate([[-22, -32], [22, -32], [25, -7], [16, 9], [-16, 9], [-25, -7]], transformed ? '#44242b' : '#273431', '#9b6a56');
+        plate([[-13, -26], [0, -33], [13, -26], [10, -7], [0, 1], [-10, -7]], '#803b3e', '#c07e65');
+        for (const side of [-1, 1]) {
+          plate([[side * 12, -31], [side * 23, -39], [side * 33, -30], [side * 29, -18], [side * 15, -19]], '#333d34', '#af9270');
+          plate([[side * 23, -33], [side * 29, -45], [side * 32, -30]], '#a79166');
+          const fx = side * (28 + swing * 4);
+          clothLimb(c, [[side * 23, -22], [side * 33, -7], [fx, 2 - swing * 7]], 13, '#3b493b', '#aa8b61');
+          ellipse(c, fx, 4 - swing * 7, 7.5, 8, '#8b7854');
+          c.strokeStyle = '#c49e6c'; c.lineWidth = 2; c.beginPath(); c.moveTo(fx - 5, 1 - swing * 7); c.lineTo(fx + 5, 1 - swing * 7); c.stroke();
+        }
+        characterHead(c, 0, -41, 11, 11, 'round');
+        poly(c, [[-10, -36], [-4, -37], [0, -33], [5, -37], [11, -35], [7, -24], [0, -19], [-8, -26]], '#25372b', '#7f8056', .8);
+        c.strokeStyle = '#913b3b'; c.lineWidth = 3; c.beginPath(); c.moveTo(-8, -44); c.quadraticCurveTo(0, -48, 8, -44); c.stroke();
+        if (transformed) { glow(c, 0, -38, 32, '#da6051', .22); ellipse(c, -4, -40, 1.8, 1.1, '#f2c780'); ellipse(c, 4, -40, 1.8, 1.1, '#f2c780'); }
+      } else {
+        poly(c, [[-14, -28], [13, -28], [18, 17], [6, 20], [0, 9], [-8, 20], [-19, 15]], '#60764f', '#b6ad79', 1.2);
+        plate([[-11, -26], [11, -26], [10, -6], [7, 2], [-7, 2], [-11, -6]], '#354c3e', '#969e74');
+        poly(c, [[-11, -25], [-5, -21], [-5, 6], [-13, 9]], '#98744d');
+        poly(c, [[11, -25], [5, -21], [5, 6], [13, 9]], '#98744d');
+        roundRect(c, -10, -2, 20, 5, 1); c.fillStyle = '#6f593e'; c.fill();
+        c.fillStyle = '#c3ad6e'; c.fillRect(-3, -1, 6, 3);
+        clothLimb(c, [[-12, -21], [-15, -9], [6, -7]], 8, '#6a7952', '#b6b184');
+        clothLimb(c, [[12, -21], [22, -11], [23, -5]], 8, '#6a7952', '#b6b184');
+        c.save(); c.translate(16 - swing * 3, -6); c.rotate(-.12);
+        plate([[-15, -2], [0, -5], [5, 1], [-8, 6], [-15, 4]], '#76563b', '#b9a879');
+        roundRect(c, -1, -5, 37, 9, 3); c.fillStyle = '#65756a'; c.fill(); c.strokeStyle = '#bbc3a2'; c.lineWidth = 1; c.stroke();
+        c.fillStyle = '#293e35'; c.fillRect(31, -4, 3, 3); c.fillRect(31, 0, 3, 3);
+        if (swing > .55) { flame(c, 40, -1, 8, '#e8c27d'); glow(c, 39, -1, 17, '#e4bd78', .3); }
+        c.restore();
+        characterHead(c, 0, -37, 9, 10, 'tall');
+        ellipse(c, 0, -46, 19, 4, '#6b6645');
+        plate([[-11, -47], [-8, -56], [7, -56], [12, -47]], '#77734c', '#bab281');
+        c.strokeStyle = '#374435'; c.lineWidth = 2; c.beginPath(); c.moveTo(-5, -32); c.quadraticCurveTo(0, -29, 5, -32); c.stroke();
+      }
+    }
+
+    junboCharacter(c, unit, time, step) {
+      const cry = (unit.cryTimer || 0) > 0 || (unit.life || 0) > Math.max(0, (unit.maxLife || 7) - 5);
+      const sob = cry ? Math.sin(time * 13) * .8 : Math.sin(time * 2) * .3;
+      c.save(); c.translate(0, sob);
+      // Entirely black hood and robe; restrained grey rim light keeps the folds readable.
+      c.beginPath(); c.moveTo(-13, -32); c.quadraticCurveTo(-20, -18, -18, -1);
+      c.lineTo(-25 - step, 24); c.lineTo(-13, 20); c.lineTo(-7, 26); c.lineTo(1, 21);
+      c.lineTo(10, 27); c.lineTo(15, 21); c.lineTo(24 + step, 24);
+      c.quadraticCurveTo(17, -10, 13, -32); c.closePath();
+      const robe = c.createLinearGradient(-20, -20, 23, 23);
+      robe.addColorStop(0, '#25302f'); robe.addColorStop(.35, '#101918'); robe.addColorStop(1, '#080f10');
+      c.fillStyle = robe; c.fill(); c.strokeStyle = '#647270'; c.lineWidth = 1; c.stroke();
+      c.strokeStyle = '#4c5b57'; c.lineWidth = 1;
+      c.beginPath(); c.moveTo(-8, -21); c.lineTo(-13, 18); c.moveTo(3, -17); c.lineTo(0, 18); c.moveTo(10, -13); c.lineTo(15, 17); c.stroke();
+      clothLimb(c, [[-13, -25], [-23, -13], [-15, -23]], 9, '#111c1b', '#586762');
+      ellipse(c, -13, -24, 4, 4, '#273732');
+      clothLimb(c, [[13, -26], [21, -13], [27, -9]], 9, '#111c1b', '#586762');
+      ellipse(c, 27, -10, 4, 4, '#273732');
+      c.beginPath(); c.moveTo(-15, -33); c.quadraticCurveTo(-19, -47, 0, -57);
+      c.quadraticCurveTo(19, -47, 15, -32); c.lineTo(8, -24); c.lineTo(-8, -24); c.closePath();
+      c.fillStyle = '#172321'; c.fill(); c.strokeStyle = '#697772'; c.lineWidth = 1.2; c.stroke();
+      c.beginPath(); c.moveTo(0, -49); c.quadraticCurveTo(-13, -43, -10, -32);
+      c.quadraticCurveTo(0, -26, 10, -32); c.quadraticCurveTo(13, -43, 0, -49);
+      c.fillStyle = '#050b0c'; c.fill();
+      c.strokeStyle = '#a5b9b0'; c.lineWidth = 1.4;
+      c.beginPath(); c.moveTo(-7, -39); c.quadraticCurveTo(-4, -36, -1, -39); c.moveTo(1, -39); c.quadraticCurveTo(4, -36, 7, -39); c.stroke();
+      ellipse(c, 0, -31.5, cry ? 2.7 : 2, cry ? 3.5 : 1.5, '#151f20');
+      if (cry) {
+        c.strokeStyle = '#89a9b0'; c.lineWidth = 1.1;
+        c.beginPath(); c.moveTo(-4, -36); c.quadraticCurveTo(-7, -31, -5, -26); c.moveTo(4, -36); c.quadraticCurveTo(7, -31, 5, -26); c.stroke();
+        ellipse(c, -5, -25, 1.3, 2.2, '#8caeb6'); ellipse(c, 5, -25, 1.3, 2.2, '#8caeb6');
+      }
+      clothLimb(c, [[28, 24], [28, -56]], 3.5, '#263532', '#82918b');
+      c.beginPath(); c.moveTo(29, -57); c.quadraticCurveTo(3, -79, -28, -49);
+      c.quadraticCurveTo(-3, -64, 23, -49); c.closePath();
+      c.fillStyle = '#344541'; c.fill(); c.strokeStyle = '#a0afa3'; c.lineWidth = 1.1; c.stroke();
+      c.restore();
+    }
+
     growthAuras(c, unit, time, radius) {
       c.save();
       const x = unit.x, y = unit.y + 18;
@@ -2959,8 +3609,9 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       const own = unit === player || (player?.id != null && unit.id === player.id);
       const r = unit.r || 23;
       const color = unit.team ? RED : BLUE;
-      const kind = own ? 'huang' : (unit.archetype || ['huang', 'arthur', 'angela', 'zhaoyun', 'caiwenji', 'xiangyu'][index]);
-      const headOffset = Math.round((({ huang: 60, arthur: 71, angela: 54, zhaoyun: 66, caiwenji: 52, xiangyu: 78 })[kind] || 60) * 1.13);
+      const kind = own ? 'huang' : (unit.archetype || ['huang', 'arthur', 'angela', 'zhaoyun', 'caiwenji', 'xiangyu', 'libai', 'hanxin', 'houyi', 'zhangfei', 'guanyu', 'liubei'][index]);
+      const headOffset = Math.round((({ huang: 60, arthur: 71, angela: 54, zhaoyun: 66, caiwenji: 52, xiangyu: 78,
+        libai: 66, hanxin: 76, houyi: 73, zhangfei: 70, guanyu: 78, liubei: 74 })[kind] || 60) * 1.13);
       c.save();
       this.growthAuras(c, unit, time, r);
       ellipse(c, unit.x + 4, unit.y + r * .7, r * 1.12, r * .45, '#061b17a0');
@@ -3026,7 +3677,8 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
         c.restore();
         glow(c, unit.x, unit.y, r * 2.2, BLUE, .17);
       }
-      this.character(c, unit, kind, time);
+      if (unit.evasionTimer > 0) { c.save(); c.globalAlpha = .38; this.character(c, unit, kind, time); c.restore(); }
+      else this.character(c, unit, kind, time);
       this.healthBar(c, unit, own ? 64 : 54, headOffset, true);
       if (unit.shieldHp > 0 && unit.shieldTimer > 0) {
         roundRect(c, unit.x - 27, unit.y - headOffset - 5, 54 * clamp(unit.shieldHp / (unit.maxHp || 800), 0, 1), 2.5, 1);
@@ -3040,6 +3692,12 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       c.shadowBlur = 5;
       const level = unit.level || 1;
       c.fillText(`${own ? '黄鸿钊' : unit.name || (unit.team ? '敌方' : '队友')} · ${level}`, unit.x, unit.y + r + 18);
+      if (unit.cryTimer > 0) {
+        c.shadowBlur = 0; c.font = `600 11px ${FONT}`; c.fillStyle = '#b4cbd1';
+        c.fillText(`泣锁 ${Math.ceil(unit.cryTimer)}秒`, unit.x, unit.y + r + 33);
+        tear(c, unit.x - 13, unit.y - headOffset + 17, 4, '#7c9ba8');
+        tear(c, unit.x + 13, unit.y - headOffset + 17, 4, '#7c9ba8');
+      }
       if (unit.silenceTimer > 0 && !(unit.stunTimer > 0)) {
         c.shadowBlur = 0;
         c.fillStyle = '#f2d7a0';
@@ -3074,12 +3732,13 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       const x = unit.x;
       const y = unit.y;
       const isCai = unit.summonKind === 'cai';
+      const isJunbo = unit.summonKind === 'junbo';
       const charging = unit.phase === 'charge' || unit.chargeTargetId != null || /冲锋|突进|charge/i.test(unit.action || '');
       const heldId = unit.grabbedTargetId ?? unit.holdingTargetId;
       const held = heldId != null ? entitiesById.get(heldId) : null;
       const target = entitiesById.get(unit.lockTargetId ?? unit.chargeTargetId);
       const color = unit.team ? RED : BLUE;
-      const accent = isCai ? '#dfc184' : '#abd5b4';
+      const accent = isJunbo ? '#9eafb9' : isCai ? '#dfc184' : '#abd5b4';
       c.save();
       ellipse(c, x + 3, y + r * .65, r, r * .4, '#061d1880');
       glow(c, x, y, r * 2.2, color, .13);
@@ -3127,14 +3786,14 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       c.arc(0, 0, r + 13, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * fraction);
       c.stroke();
       c.restore();
-      this.character(c, unit, isCai ? 'cai' : 'chen', time);
-      this.healthBar(c, unit, 48, isCai ? 67 : 75);
+      this.character(c, unit, isJunbo ? 'junbo' : isCai ? 'cai' : 'chen', time);
+      this.healthBar(c, unit, 48, isJunbo ? 95 : isCai ? 67 : 75);
       c.font = `13px ${FONT}`;
       c.textAlign = 'center';
       c.fillStyle = '#eee8cd';
       c.shadowColor = '#10271f';
       c.shadowBlur = 4;
-      c.fillText(unit.name || (isCai ? '蔡佳浩' : '陈博涵'), x, y + 39);
+      c.fillText(unit.name || (isJunbo ? '蔡骏博' : isCai ? '蔡佳浩' : '陈博涵'), x, y + 39);
       c.restore();
     }
 
@@ -3205,7 +3864,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       }
       if (boss) this.bossMonster(c, unit, time);
       else {
-        const step = unit.mode === 'chase' || unit.mode === 'return' ? Math.sin(time * 9 + (unit.id || 0)) : Math.sin(time * 2) * .25;
+        const step = unit.cryTimer > 0 || unit.stunTimer > 0 ? 0 : unit.mode === 'chase' || unit.mode === 'return' ? Math.sin(time * 9 + (unit.id || 0)) : Math.sin(time * 2) * .25;
         const scale = clamp((unit.r || 29) / 29, .8, 1.45);
         c.save(); c.translate(x, y); c.scale(scale * ((unit.facingX ?? 1) < 0 ? -1 : 1), scale);
         ellipse(c, 0, 18, 35, 16, '#09251e80');
@@ -3269,6 +3928,10 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
         c.font = `11px ${FONT}`; c.fillStyle = '#f2ecd3';
         c.fillText(`${Math.ceil(unit.hp)} / ${unit.maxHp}`, x, y - offset + 20);
       }
+      if (unit.cryTimer > 0) {
+        tear(c, x - (boss ? 55 : 26), y - offset + 2, 5, '#829fac');
+        tear(c, x + (boss ? 55 : 26), y - offset + 2, 5, '#829fac');
+      }
       c.restore();
     }
 
@@ -3323,7 +3986,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       const cannon = !!unit.cannon;
       const ranged = !!unit.ranged && !cannon;
       const scale = cannon ? .84 : ranged ? .77 : .74;
-      const step = Math.sin(time * 8.8 + (unit.id || 0) * .61);
+      const step = unit.cryTimer > 0 || unit.stunTimer > 0 || unit.rootTimer > 0 ? 0 : Math.sin(time * 8.8 + (unit.id || 0) * .61);
       const ratio = clamp((unit.attackCd || 0) / (unit.attackInterval || 1), 0, 1);
       const attack = ratio > .55 ? Math.sin((1 - ratio) / .45 * Math.PI) : 0;
       const sway = step * .035;
@@ -3391,6 +4054,12 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
         poly(c, [[-3, -42], [0, -47], [3, -42], [0, -39]], '#dce0a0', '#f3e8bd', .7);
       }
       c.restore();
+      if (unit.cryTimer > 0) {
+        tear(c, x - 12, y - 31, 3.7, '#8ca7b2');
+        tear(c, x + 12, y - 31, 3.7, '#8ca7b2');
+        c.strokeStyle = '#91acb8'; c.lineWidth = 1.4;
+        c.beginPath(); c.ellipse(x, y + 18, 21, 9, 0, 0, Math.PI * 2); c.stroke();
+      }
       if (unit.hp < unit.maxHp || cannon) this.healthBar(c, unit, cannon ? 42 : 36, cannon ? 41 : 38);
       c.restore();
     }
@@ -3409,7 +4078,78 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       c.strokeStyle = e.color || '#d6e2ba';
       c.fillStyle = e.color || '#d6e2ba';
       c.lineWidth = 2 + fraction * 3;
-      if (e.type === 'bossWarning') {
+      if (e.type === 'cry' || e.type === 'apocalypse') {
+        const rr = radius * (e.type === 'apocalypse' ? 1.15 - fraction * .3 : 1);
+        c.globalAlpha = e.type === 'apocalypse' ? fraction * .18 : .09;
+        c.fillStyle = '#192731'; c.beginPath(); c.arc(e.x, e.y, rr, 0, Math.PI * 2); c.fill();
+        c.globalAlpha = Math.min(.65, fraction * 2); c.strokeStyle = '#8396a3'; c.lineWidth = 1.7;
+        c.beginPath(); c.arc(e.x, e.y, rr, 0, Math.PI * 2); c.stroke();
+        c.strokeStyle = '#506978'; c.lineWidth = 1.2;
+        for (let j = 0; j < 3; j++) {
+          const k = (time * .32 + j / 3) % 1;
+          c.globalAlpha = .16 + k * .36;
+          c.beginPath(); c.arc(e.x, e.y, rr * (1 - k), 0, Math.PI * 2); c.stroke();
+        }
+        for (let j = 0; j < 8; j++) {
+          const a = j * Math.PI / 4 + time * .17;
+          const k = (time * .38 + j * .137) % 1;
+          const d = rr * (.96 - k * .83);
+          c.globalAlpha = .4 + Math.sin(k * Math.PI) * .4;
+          tear(c, e.x + Math.cos(a) * d, e.y + Math.sin(a) * d, 4 + (1 - k) * 3, '#708797');
+        }
+      } else if (['wineDash', 'backstep', 'shotgunRam', 'beastRoar', 'cavalryCharge'].includes(e.type)) {
+        const charging = e.type === 'cavalryCharge' || e.type === 'beastRoar';
+        const wine = e.type === 'wineDash';
+        c.strokeStyle = wine ? '#c7e2cf' : e.type === 'beastRoar' ? '#b55f56' : '#d2c18c';
+        c.lineWidth = charging ? Math.min(65, radius) : e.type === 'backstep' ? 9 : 20;
+        c.globalAlpha = fraction * .36;
+        c.beginPath(); c.moveTo(e.x, e.y); c.lineTo(tx, ty); c.stroke();
+        c.globalAlpha = fraction * .9; c.lineWidth = charging ? 3 : 2;
+        c.strokeStyle = wine ? '#eaf0d9' : '#e9d5a7';
+        c.beginPath(); c.moveTo(e.x, e.y); c.lineTo(tx, ty); c.stroke();
+        if (wine) {
+          for (let j = 1; j <= 4; j++) { const k = j / 5; ellipse(c, e.x + (tx - e.x) * k, e.y + (ty - e.y) * k, 3 + j % 2, 2, '#e3e7c5'); }
+        }
+      } else if (e.type === 'lotusRing' || e.type === 'lotusSlash') {
+        c.strokeStyle = '#c4dcca'; c.lineWidth = e.type === 'lotusSlash' ? 3 : 1.7;
+        c.beginPath(); c.arc(e.x, e.y, radius, 0, Math.PI * 2); c.stroke();
+        for (let j = 0; j < 6; j++) {
+          const a = j * Math.PI / 3 + time * (e.type === 'lotusSlash' ? 2.3 : .25);
+          c.save(); c.translate(e.x, e.y); c.rotate(a);
+          c.strokeStyle = j % 2 ? '#d7dfb5' : '#b5d0c1';
+          c.beginPath(); c.ellipse(radius * .53, 0, radius * .4, radius * .12, -.15, 0, Math.PI * 2); c.stroke();
+          if (e.type === 'lotusSlash') { c.lineWidth = 3; c.beginPath(); c.arc(0, 0, radius * .78, -.4, .4); c.stroke(); }
+          c.restore();
+        }
+      } else if (['hanxinLeap', 'spearStorm', 'cavalryLeap'].includes(e.type)) {
+        c.strokeStyle = e.type === 'cavalryLeap' ? '#b6ce96' : '#e0b3a1'; c.lineWidth = 2.6;
+        c.beginPath(); c.arc(e.x, e.y, radius * (1 - fraction * .2), 0, Math.PI * 2); c.stroke();
+        const count = e.type === 'spearStorm' ? 4 : 1;
+        for (let j = 0; j < count; j++) {
+          const a = j * Math.PI / 2 + time * 1.7;
+          const px = e.x + Math.cos(a) * radius * (count > 1 ? .55 : 0), py = e.y + Math.sin(a) * radius * (count > 1 ? .55 : 0);
+          c.strokeStyle = '#ebe5cb'; c.lineWidth = 2;
+          c.beginPath(); c.moveTo(px, py - 38 - fraction * 20); c.lineTo(px, py + 4); c.stroke();
+          poly(c, [[px - 5, py - 6], [px, py + 7], [px + 5, py - 6]], '#e4d5b4');
+        }
+      } else if (['sunlight', 'sunExplosion', 'guardianSweep', 'guardianLeap', 'shotgunBuff', 'shotgunRally'].includes(e.type)) {
+        const sun = e.type === 'sunlight' || e.type === 'sunExplosion';
+        c.strokeStyle = sun ? '#ead095' : e.type.startsWith('guardian') ? '#a7bc99' : '#d4c496'; c.lineWidth = 2.5;
+        c.beginPath(); c.arc(e.x, e.y, radius * (1 - fraction * .25), 0, Math.PI * 2); c.stroke();
+        c.globalAlpha *= .12; c.fillStyle = sun ? '#e7c77c' : '#9ebc90'; c.fill(); c.globalAlpha = fraction * .7;
+        for (let j = 0; j < (sun ? 8 : 5); j++) {
+          const a = j * Math.PI * 2 / (sun ? 8 : 5) + time * .35;
+          const d = radius * .8;
+          c.beginPath(); c.moveTo(e.x + Math.cos(a) * d, e.y + Math.sin(a) * d);
+          c.lineTo(e.x + Math.cos(a) * (d + 12), e.y + Math.sin(a) * (d + 12)); c.stroke();
+        }
+      } else if (e.type === 'sunArrow') {
+        const a = Math.atan2(ty - e.y, tx - e.x);
+        c.strokeStyle = '#e8cf8e'; c.lineWidth = 5;
+        c.beginPath(); c.moveTo(e.x, e.y); c.lineTo(tx, ty); c.stroke();
+        c.save(); c.translate(tx, ty); c.rotate(a);
+        poly(c, [[23, 0], [-9, -11], [-3, 0], [-9, 11]], '#eee0a3', '#e2bc76', 1.5); c.restore();
+      } else if (e.type === 'bossWarning') {
         c.globalAlpha = .12 + (1 - fraction) * .12;
         c.fillStyle = '#e9a376'; c.beginPath(); c.arc(e.x, e.y, radius, 0, Math.PI * 2); c.fill();
         c.globalAlpha = .78; c.strokeStyle = '#f1bb85'; c.lineWidth = 2.5;
@@ -3618,7 +4358,22 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       if (p.alive === false) return;
       const color = p.color || (p.team ? RED : BLUE);
       const r = p.r || 4;
-      if (p.type === 'dragonBreath') {
+      if (p.type === 'arrow' || p.type === 'sunArrow') {
+        const big = p.type === 'sunArrow';
+        c.save(); c.translate(p.x, p.y); c.rotate(Math.atan2(p.vy || 0, p.vx || 1));
+        if (big) glow(c, 0, 0, 30, '#e7c77e', .3);
+        c.strokeStyle = big ? '#f0d99c' : '#d6ce9c'; c.lineWidth = big ? 3 : 1.5;
+        c.beginPath(); c.moveTo(big ? -28 : -13, 0); c.lineTo(big ? 15 : 8, 0); c.stroke();
+        poly(c, big ? [[23, 0], [9, -8], [12, 0], [9, 8]] : [[12, 0], [5, -3], [5, 3]], '#e7ddb0');
+        c.strokeStyle = '#bdab75'; c.lineWidth = big ? 2 : 1;
+        c.beginPath(); c.moveTo(big ? -22 : -10, 0); c.lineTo(big ? -29 : -15, big ? -6 : -3); c.moveTo(big ? -22 : -10, 0); c.lineTo(big ? -29 : -15, big ? 6 : 3); c.stroke();
+        c.restore();
+      } else if (p.type === 'shotgun') {
+        c.save(); c.strokeStyle = '#e5c98d'; c.lineWidth = Math.max(1.5, Math.min(3, r));
+        const angle = Math.atan2(p.vy || 0, p.vx || 1);
+        c.beginPath(); c.moveTo(p.x - Math.cos(angle) * 7, p.y - Math.sin(angle) * 7); c.lineTo(p.x, p.y); c.stroke();
+        ellipse(c, p.x, p.y, 2, 2, '#eee0ad'); c.restore();
+      } else if (p.type === 'dragonBreath') {
         c.save(); c.translate(p.x, p.y); c.rotate(Math.atan2(p.vy || 0, p.vx || 1) + Math.PI / 2);
         glow(c, 0, 0, 38, '#a3e3b9', .35);
         flame(c, 0, 0, Math.max(12, r * 1.5), '#6fbc9e'); flame(c, 0, 3, Math.max(7, r), '#d9edbd');
@@ -3775,7 +4530,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
   const engine = new GameEngine();
   const canvas = $('arena'), mini = $('minimap');
   const renderer = new GameRenderer(canvas), mapContext = mini.getContext('2d');
-  const input = {moveX:0, moveY:0, aimX:1800, aimY:1800, attack:false, skills:[false,false,false], heal:false, moveTarget:null};
+  const input = {moveX:0, moveY:0, aimX:1800, aimY:1800, attack:false, skills:[false,false,false], heal:false, apocalypse:false, moveTarget:null};
   const keys = new Set(), touchMove = {x:0,y:0};
   const skillButtons = all('[data-skill]'), upgradeButtons = all('[data-upgrade]');
   const skillPointers = skillButtons.map(() => ({id:null,origin:null,dragged:false}));
@@ -3787,7 +4542,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
   let now=0,last=0,hudElapsed=0,toastUntil=0,mouseAttack=false,buttonAttack=false,attackPointer=null,joyPointer=null;
   let pointerAim={x:1800,y:1800}, mouseClient=null, hasAim=false, skillAim=false, aimReleaseFrames=0, pointerType='mouse';
   let navigationTarget=null,lastMessage='',wasDead=false,previousPoints=1,guideShown=false;
-  let shopCategory='recommended',selectedItemId=null,selectedSlot=null,inventorySignature='',hudExpanded=false;
+  let shopCategory='recommended',selectedItemId=null,selectedSlot=null,inventorySignature='',hudExpanded=false,previousApocalypseReady=false;
   const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
   const timeText=seconds=>`${Math.floor(Math.max(0,seconds)/60).toString().padStart(2,'0')}:${Math.floor(Math.max(0,seconds)%60).toString().padStart(2,'0')}`;
   const alive=u=>u&&u.alive!==false&&u.hp>0;
@@ -3802,11 +4557,11 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
   function showMode(next){hideScreens();mode=next;const id={start:'start-screen',paused:'pause-screen',help:'help-screen',shop:'shop-screen',ended:'result-screen'}[next];if(id)$(id).classList.remove('hidden');}
   function clearInput(){
     setHudExpanded(false);keys.clear();touchMove.x=touchMove.y=input.moveX=input.moveY=0;input.attack=mouseAttack=buttonAttack=false;
-    input.skills.fill(false);input.heal=false;input.moveTarget=null;joyPointer=attackPointer=null;skillAim=false;aimReleaseFrames=0;
+    input.skills.fill(false);input.heal=false;input.apocalypse=false;input.moveTarget=null;joyPointer=attackPointer=null;skillAim=false;aimReleaseFrames=0;
     skillPointers.forEach(pointer=>pointer.id=null);$('joystick-thumb').style.transform='';all('.pressed').forEach(node=>node.classList.remove('pressed'));
   }
   function start(){
-    engine.reset({difficulty});clearInput();showMode('playing');navigationTarget=null;hasAim=false;lastMessage='';wasDead=false;previousPoints=engine.state.player.skillPoints||0;inventorySignature='';
+    engine.reset({difficulty});clearInput();showMode('playing');navigationTarget=null;hasAim=false;lastMessage='';wasDead=false;previousPoints=engine.state.player.skillPoints||0;inventorySignature='';previousApocalypseReady=false;
     $('match-difficulty').textContent=difficultyNames[difficulty];updateHud();
     toast(guideShown?'三路兵线已就位，跟随队友推进。':'先点技能上方的＋学习技能；商店可购买装备，点小地图自动前往。',guideShown?3500:7500);guideShown=true;
   }
@@ -3853,11 +4608,32 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
     if(player.skillCds?.[index]>.05){toast('技能冷却中。',1200);return false;}
     input.skills[index]=true;return true;
   }
+  function apocalypseState(){const player=engine.state.player,raw=Number(player.summonDeaths),charges=Number.isFinite(raw)?Math.max(0,Math.floor(raw)):0;return {charges,ready:alive(player)&&charges>=5&&player.apocalypseReady!==false&&!(player.stunTimer>0||player.silenceTimer>0)};}
+  function queueApocalypse(){
+    if(mode!=='playing')return false;
+    if(!alive(engine.state.player)){toast('等待复活后释放痛哭。',1800);return false;}
+    if(engine.state.player.stunTimer>0||engine.state.player.silenceTimer>0){toast('当前受到控制，暂时无法释放痛哭。',1800);return false;}
+    const {charges,ready}=apocalypseState();
+    if(!ready){toast(charges<5?`痛哭充能 ${Math.min(charges,5)}/5：陈博涵与蔡佳浩合计被击杀5次后可释放，寿命结束不计。`:'痛哭暂时不可释放。',3800);return false;}
+    input.apocalypse=true;setHudExpanded(false);return true;
+  }
+  $('apocalypse-btn').onclick=queueApocalypse;
+  function renderApocalypse(){
+    const {charges,ready}=apocalypseState(),button=$('apocalypse-btn');
+    $('apocalypse-charge').textContent=`${Math.min(charges,5)} / 5`;
+    button.classList.toggle('ready',ready);button.classList.toggle('locked',!ready);button.setAttribute('aria-disabled',String(!ready));
+    const player=engine.state.player;
+    const description=ready?'痛哭已就绪：召唤蔡骏博，拉近附近敌人并控制5秒，消耗5次充能':charges>=5?(!alive(player)?'痛哭已充满，等待复活后释放':'痛哭已充满，当前受到控制或暂不可释放'):`痛哭充能${Math.min(charges,5)}/5：陈博涵与蔡佳浩合计被击杀5次后可释放，寿命结束不计`;
+    button.title=description;button.setAttribute('aria-label',description);
+    if(ready&&!previousApocalypseReady&&mode==='playing')toast('痛哭已就绪，点独立按钮或按F召唤蔡骏博。',3600);
+    previousApocalypseReady=ready;
+  }
   addEventListener('keydown',event=>{
-    const key=event.key.toLowerCase();if([' ','arrowup','arrowdown','arrowleft','arrowright','w','a','s','d','j','q','e','r','b','p','1','2','3','escape'].includes(key))event.preventDefault();
+    const key=event.key.toLowerCase();if([' ','arrowup','arrowdown','arrowleft','arrowright','w','a','s','d','j','q','e','r','b','f','p','1','2','3','escape'].includes(key))event.preventDefault();
     if(event.repeat&&['escape','p','1','2','3'].includes(key))return;
     if(key==='escape'){if(mode==='playing')pause();else if(mode==='paused')resume();else if(mode==='help')closeHelp();else if(mode==='shop')closeShop();return;}
     if(key==='p'){if(mode==='shop')closeShop();else openShop();return;}
+    if(key==='f'){if(!event.repeat)queueApocalypse();return;}
     if(['1','2','3'].includes(key)){upgrade(Number(key)-1);return;}
     if(mode!=='playing')return;keys.add(key);
     if(!event.repeat){if(key==='q')queueSkill(0);if(key==='e')queueSkill(1);if(key==='r')queueSkill(2);if(key==='b')input.heal=true;}
@@ -3932,7 +4708,7 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
   $('buy-item').onclick=()=>{if(mode!=='shop'||!selectedItemId)return;if(engine.buyItem?.(selectedItemId)){$('shop-feedback').textContent='购买成功，属性已经生效。';selectedSlot=null;renderShop();updateHud();}else{$('shop-feedback').textContent='购买失败，请检查金币、空位和靴子限制。';renderShop();}};
   $('sell-item').onclick=()=>{if(mode!=='shop'||selectedSlot===null)return;const item=itemById(inventory()[selectedSlot]);if(engine.sellItem?.(selectedSlot)){selectedSlot=null;$('shop-feedback').textContent=`已出售${item?.name||'装备'}，返还70%金币。`;renderShop();updateHud();}};
   function updateHud(){
-    const s=engine.state,p=s.player;
+    const s=engine.state,p=s.player;renderApocalypse();
     $('timer').textContent=timeText(s.time);$('blue-score').textContent=s.score[0];$('red-score').textContent=s.score[1];$('level').textContent=p.level||1;
     const gold=Math.floor(p.gold||0);$('gold').textContent=gold;$('shop-gold').textContent=gold+' 金';$('kills').textContent=p.kills||0;$('deaths').textContent=p.deaths||0;
     $('player-hp').style.width=`${clamp(p.hp/p.maxHp,0,1)*100}%`;$('hp-text').textContent=`${Math.max(0,Math.ceil(p.hp))} / ${Math.ceil(p.maxHp)}`;
@@ -3973,8 +4749,8 @@ html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(-
       input.moveX=touchMove.x+(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0);input.moveY=touchMove.y+(keys.has('s')||keys.has('arrowdown')?1:0)-(keys.has('w')||keys.has('arrowup')?1:0);
       const length=Math.hypot(input.moveX,input.moveY);if(length>1){input.moveX/=length;input.moveY/=length;}if(length>.05){input.moveTarget=null;navigationTarget=null;}
       if(hasAim&&!skillAim&&mouseClient&&pointerType==='mouse')pointerAim=renderer.screenToWorld(mouseClient.x,mouseClient.y);if(!hasAim&&!skillAim)autoAim();input.aimX=pointerAim.x;input.aimY=pointerAim.y;input.attack=mouseAttack||buttonAttack||keys.has('j')||keys.has(' ');
-      if(length>.05||input.attack||input.skills.some(Boolean)||input.heal)setHudExpanded(false);
-      engine.update(dt,input);input.skills.fill(false);input.heal=false;input.moveTarget=null;
+      if(length>.05||input.attack||input.skills.some(Boolean)||input.heal||input.apocalypse)setHudExpanded(false);
+      const apocalypseRequested=input.apocalypse;engine.update(dt,input);input.skills.fill(false);input.heal=false;input.apocalypse=false;input.moveTarget=null;if(apocalypseRequested)renderApocalypse();
       if(aimReleaseFrames>0&&--aimReleaseFrames===0){skillAim=false;if(pointerType==='touch')hasAim=false;}
       if(safeWinner(engine.state.winner))finish();
     }
