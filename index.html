@@ -35,6 +35,25 @@
 @media(max-width:600px) and (orientation:portrait){.buff-status{position:fixed;left:14px;right:auto;top:auto;bottom:190px;max-width:145px;justify-content:flex-start}}
 @media(max-width:600px) and (orientation:portrait) and (max-height:740px){.skill-points{bottom:235px}}
 
+/* Compact battle HUD. The persistent phone interface uses two rows; details are opt-in. */
+html,body{-webkit-text-size-adjust:100%;text-size-adjust:100%}#game{height:var(--viewport-height,100dvh);min-height:0}
+.player-panel{top:auto;right:auto;bottom:max(24px,env(safe-area-inset-bottom));left:max(24px,env(safe-area-inset-left));width:328px;padding:0;background:#0b271fe8;overflow:visible;z-index:9}
+.player-strip{display:flex;align-items:center;gap:8px;height:40px;padding:4px 7px}.level-pill{display:flex;align-items:center;gap:2px;flex-shrink:0;font-size:13px;color:#c8c5a1;white-space:nowrap}.level-pill b{font-size:14px;color:#efd39a;font-weight:500}.player-vitals{flex:1;min-width:40px}.player-vitals .health-track{height:16px;margin:0;border-color:#adc38b44}.player-vitals .health-track>span{font-size:12px;line-height:14px;letter-spacing:0;white-space:nowrap}.player-vitals .xp-track{height:2px;margin-top:3px}.gold-pill{display:flex;gap:3px;align-items:center;flex-shrink:0;white-space:nowrap;font-size:13px;color:#c9bd8c}.gold-pill b{font-size:14px;font-weight:400;color:#efd394}.hud-detail-toggle{flex-shrink:0;min-width:44px;min-height:32px;padding:4px 6px;border:1px solid #aeb27655;background:#213d28;color:#e4d2a5;font-size:14px;line-height:1.2}
+.player-extra{position:absolute;bottom:calc(100% + 8px);left:0;right:0;max-height:min(420px,60dvh);overflow:auto;touch-action:pan-y;padding:12px;background:#102d20f5;border:1px solid #c5ae7277;box-shadow:0 8px 28px #0005;z-index:15}.detail-inline{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px;color:#e7d4a7}.detail-inline strong{font-weight:400}.player-extra .detail-xp{margin:7px 0 0;font-size:14px;line-height:1.5;color:#bbcca7}.player-extra .player-stats{font-size:14px;margin-top:8px;gap:14px}.player-extra .player-stats>button{min-height:32px}.player-extra .hud-inventory{margin-top:8px;display:grid;gap:6px}.player-extra .equipment-slot{height:36px}.player-extra .buff-status{position:static;inset:auto;margin-top:7px;max-width:none;justify-content:flex-start}.player-extra .summon-status{display:block;margin-top:6px;font-size:14px;white-space:normal;line-height:1.5}.compact-towers{display:inline}
+@media(max-width:900px),(orientation:landscape) and (max-height:620px){
+  #game{--hud-safe-top:env(safe-area-inset-top,0px)}
+  .topbar,.is-touch .topbar{position:absolute;top:var(--hud-safe-top);height:44px;display:grid;grid-template-columns:auto minmax(84px,1fr) auto;gap:4px;align-items:center;padding:4px max(8px,env(safe-area-inset-right)) 4px max(8px,env(safe-area-inset-left));background:linear-gradient(#071d16ed,#0a251bd9);z-index:10}
+  .brand{gap:0;min-width:0}.brand .seal,.brand small{display:none}.brand strong{font-family:"Microsoft YaHei","PingFang SC",sans-serif;font-size:16px;font-weight:500;letter-spacing:0;white-space:nowrap;line-height:1.2}
+  .match-hud{position:static;left:auto;top:auto;transform:none;justify-self:center;gap:8px;margin:0;padding:0 4px;height:34px;min-width:84px;max-width:128px;border:0;background:transparent;clip-path:none;white-space:nowrap}.team{gap:0}.team span{display:none}.team b{font-size:20px;line-height:1;white-space:nowrap}.clock{min-width:45px}.clock>span{font-size:14px;letter-spacing:0;line-height:1.2;white-space:nowrap}.clock small{display:none}
+  .toolbar{gap:4px;align-items:center}.toolbar>button{width:36px;min-width:36px;height:36px;padding:0;border-radius:3px;font-size:21px;line-height:1}.toolbar .shop-toggle{width:44px;min-width:44px;min-height:36px;padding:0 5px;justify-content:center;gap:0;font-size:14px;white-space:nowrap}.shop-toggle b{display:none}
+  .structure-hud{display:none}.player-panel{top:calc(var(--hud-safe-top) + 48px);left:max(8px,env(safe-area-inset-left));right:max(8px,env(safe-area-inset-right));bottom:auto;width:auto;padding:0;border:1px solid #bbab6c4d;border-left:1px solid #bbab6c4d;background:#0b261be8;z-index:9}.player-strip{height:34px;padding:2px 5px;gap:7px}.hud-detail-toggle{min-width:44px;min-height:30px;padding:4px 5px}.player-vitals .health-track{height:15px}.player-vitals .health-track>span{font-size:12px;line-height:13px}.player-vitals .xp-track{margin-top:2px}.level-pill{font-size:12px}.level-pill b,.gold-pill b{font-size:14px}.gold-pill{font-size:12px}
+  .player-extra{top:calc(100% + 6px);bottom:auto;left:auto;right:0;width:min(320px,calc(100vw - 16px));max-height:min(340px,56dvh);padding:11px}.player-extra .hud-inventory{display:grid}.player-extra .equipment-slot{height:36px}.player-extra .summon-status{display:block}.player-extra .buff-status{position:static;inset:auto;max-width:none}
+  .minimap-panel{display:block;top:calc(var(--hud-safe-top) + 90px);left:max(8px,env(safe-area-inset-left));width:102px;height:102px;margin:0;padding:4px;background:#0b251dc9;border:1px solid #afad6c66;box-shadow:0 3px 14px #0002;z-index:7}.minimap-panel canvas{display:block;width:92px;height:92px}.minimap-panel>span{display:none}
+  .objective-panel{position:absolute;top:calc(var(--hud-safe-top) + 90px);left:auto;right:max(8px,env(safe-area-inset-right));width:auto;min-width:128px;max-width:calc(100% - 130px);padding:5px 8px;background:#10291ed9;border:1px solid #bbaa6d4d;z-index:7}.objective-panel>div:first-child{gap:8px;line-height:1.2;white-space:nowrap}.objective-panel strong{font-size:14px;line-height:1.2;white-space:nowrap}.objective-panel span{font-size:14px;line-height:1.2;white-space:nowrap}.objective-panel small{display:none}.boss-track{height:3px;margin:4px 0 0}.landscape-tip{display:none}
+  .toast{top:calc(var(--hud-safe-top) + 128px);bottom:auto;max-width:min(390px,calc(100vw - 136px));width:auto;padding:7px 10px;font-size:14px;line-height:1.4}
+}
+@media(max-width:350px){.topbar,.is-touch .topbar{grid-template-columns:minmax(84px,1fr) auto}.brand{display:none}.match-hud{justify-self:start}.toolbar{justify-self:end}.player-strip{gap:5px}.gold-pill{gap:2px}.level-pill{font-size:12px}}
+
 </style>
 </head>
 <body>
@@ -48,15 +67,16 @@
   </header>
   <div class="structure-hud"><div class="core-blue"><div class="core-caption"><span>我方</span><b id="blue-towers">9 塔</b></div><div class="core-track"><i id="blue-core"></i></div></div><span class="battle-label">三路推塔</span><div class="core-red"><div class="core-caption"><b id="red-towers">9 塔</b><span>敌方</span></div><div class="core-track"><i id="red-core"></i></div></div></div>
   <aside class="minimap-panel"><canvas id="minimap" width="360" height="360" aria-label="三路小地图，点击地点自动前往"></canvas><span id="nav-status">点地图 · 自动前往</span></aside>
-  <aside class="objective-panel"><div><strong>大龙</strong><span id="boss-status">01:30 后现身</span></div><div class="boss-track"><i id="boss-hp"></i></div><small id="boss-note">击败获得全队增益</small></aside>
+  <aside class="objective-panel"><div><strong>大龙</strong><span id="boss-status">00:30 后现身</span></div><div class="boss-track"><i id="boss-hp"></i></div><small id="boss-note">击败获得全队增益</small></aside>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="respawn" class="respawn hidden"><span>暂离战场</span><strong id="respawn-seconds">10</strong><small>复活后继续作战</small></div>
-  <aside class="player-panel">
-    <div class="player-main"><div class="player-glyph">黄<span id="level">1</span></div><div class="player-details"><div class="player-name"><strong>黄鸿钊</strong><span class="role-label">召唤术士</span><span id="compact-towers" class="compact-towers">塔 9 : 9</span></div><div class="health-track"><i id="player-hp"></i><span id="hp-text">800 / 800</span></div><div class="xp-row"><div class="xp-track"><i id="player-xp"></i></div><span id="xp-text">等级 1 / 15</span></div></div></div>
-    <div class="player-stats"><span>金 <b id="gold">0</b></span><span>击杀 <b id="kills">0</b></span><span>阵亡 <b id="deaths">0</b></span><button id="inventory-shop" title="打开装备商店">装备</button></div>
-    <div id="hud-inventory" class="hud-inventory" aria-label="六个装备槽"></div>
-    <div id="buff-status" class="buff-status"></div>
-    <div id="summon-status" class="summon-status">挥扇御风 · 召唤双将</div>
+  <aside class="player-panel" aria-label="玩家状态">
+    <div class="player-strip"><span class="level-pill">Lv.<b id="level">1</b></span><div class="player-vitals"><div class="health-track"><i id="player-hp"></i><span id="hp-text">800 / 800</span></div><div class="xp-track"><i id="player-xp"></i></div></div><span class="gold-pill"><b id="gold">0</b> 金</span><button id="hud-details-btn" class="hud-detail-toggle" aria-expanded="false" aria-controls="player-extra">详情</button></div>
+    <section id="player-extra" class="player-extra hidden" aria-label="战况详情">
+      <div class="detail-inline"><strong>黄鸿钊</strong><span id="compact-towers">塔 9 : 9</span></div><p id="xp-text" class="detail-xp">等级 1 / 15</p>
+      <div class="player-stats"><span>击杀 <b id="kills">0</b></span><span>阵亡 <b id="deaths">0</b></span><button id="inventory-shop" title="打开装备商店">装备商店</button></div>
+      <div id="hud-inventory" class="hud-inventory" aria-label="六个装备槽"></div><div id="buff-status" class="buff-status"></div><div id="summon-status" class="summon-status">挥扇御风 · 召唤双将</div>
+    </section>
   </aside>
   <div class="joystick" id="joystick" aria-label="移动摇杆"><div class="joystick-ring"></div><div class="joystick-thumb" id="joystick-thumb"></div></div>
   <div class="combat-controls">
@@ -78,7 +98,7 @@
     <div class="start-decoration" aria-hidden="true"><span>黄</span><span>鸿钊</span><div>三路入局 · 御风而行</div></div><footer class="intro-footer"><span>1 名玩家 · 5 名自主 AI</span><span>三路 / 野区 / 大龙 / 装备</span></footer>
   </section>
   <section id="pause-screen" class="overlay modal-overlay hidden" aria-labelledby="pause-title"><div class="modal"><span class="eyebrow">歇息片刻</span><h2 id="pause-title">战局已暂停</h2><p>所有英雄、野怪与战场计时均已暂停。</p><button class="primary" id="resume-btn">继续对战</button><button class="secondary" id="paused-shop-btn">查看装备商店</button><button class="text-btn centered" id="restart-btn">重新开始本局</button></div></section>
-  <section id="help-screen" class="overlay modal-overlay hidden" aria-labelledby="help-title"><div class="modal help-modal"><span class="eyebrow">战场手册</span><h2 id="help-title">三路推进，借势破阵</h2><p>双方各有九座防御塔。沿任意一路依次摧毁三座敌塔，打开水晶防线，击破水晶即获胜。地图点击地点可自动前往，手动移动会取消。</p><div class="help-grid"><div><strong>电脑操作</strong><p>WASD / 方向键移动，鼠标瞄准<br>J / 按住鼠标普攻，Q E R 技能<br>数字 1 / 2 / 3 学习或升级技能<br>P 商店，B 回城，Esc 暂停</p></div><div><strong>手机操作</strong><p>左侧摇杆移动，右侧普攻与技能<br>点技能上方的＋分配技能点<br>点商店购买装备，点小地图前往<br>召唤物会自主寻找敌人</p></div></div><div class="help-notes"><p><b>成长：</b>最高15级，每次升级获得技能点。大招在4 / 8 / 12级提升；普通技能最多6级。</p><p><b>装备：</b>金币手动购买，最多六件；同一时间限一双靴子。出售返还70%金币，商店可随时打开，购物期间战局暂停。</p><p><b>野区：</b>击败野怪获得经验金币和红蓝增益。大龙约90秒出现，击败后全队获得增益并强化兵线。</p><p><b>阵容：</b>你操控黄鸿钊，队友为剑盾、火法；敌方为长枪、琴音、巨刃。E召唤陈博涵近战输出，R召唤蔡佳浩冲锋抱控。</p></div><button class="primary" id="close-help">准备好了</button></div></section>
+  <section id="help-screen" class="overlay modal-overlay hidden" aria-labelledby="help-title"><div class="modal help-modal"><span class="eyebrow">战场手册</span><h2 id="help-title">三路推进，借势破阵</h2><p>双方各有九座防御塔。沿任意一路依次摧毁三座敌塔，打开水晶防线，击破水晶即获胜。地图点击地点可自动前往，手动移动会取消。</p><div class="help-grid"><div><strong>电脑操作</strong><p>WASD / 方向键移动，鼠标瞄准<br>J / 按住鼠标普攻，Q E R 技能<br>数字 1 / 2 / 3 学习或升级技能<br>P 商店，B 回城，Esc 暂停</p></div><div><strong>手机操作</strong><p>左侧摇杆移动，右侧普攻与技能<br>点技能上方的＋分配技能点<br>点商店购买装备，点小地图前往<br>召唤物会自主寻找敌人</p></div></div><div class="help-notes"><p><b>成长：</b>最高15级，每次升级获得技能点。大招在4 / 8 / 12级提升；普通技能最多6级。</p><p><b>装备：</b>金币手动购买，最多六件；同一时间限一双靴子。出售返还70%金币，商店可随时打开，购物期间战局暂停。</p><p><b>野区：</b>击败野怪获得经验金币和红蓝增益。大龙开局30秒出现，击败后全队获得增益并强化兵线。</p><p><b>阵容：</b>你操控黄鸿钊，队友为剑盾、火法；敌方为长枪、琴音、巨刃。E召唤陈博涵近战输出，R召唤蔡佳浩冲锋抱控。</p></div><button class="primary" id="close-help">准备好了</button></div></section>
   <section id="shop-screen" class="overlay shop-overlay hidden" aria-labelledby="shop-title">
     <div class="shop-modal"><header class="shop-header"><div><span class="eyebrow">装备商店</span><h2 id="shop-title">集百器，定胜局</h2></div><div class="shop-balance">可用金币 <b id="shop-balance">0</b></div><button id="close-shop" class="close-btn" aria-label="关闭商店">×</button></header><p id="shop-pause-note" class="shop-pause-note">购物期间战局暂停 · 关闭后继续</p><div class="shop-layout"><nav id="shop-categories" class="shop-categories" aria-label="装备分类"></nav><div id="shop-products" class="shop-products" aria-label="可购买装备"></div><aside class="shop-detail"><div id="item-detail"></div><div class="shop-purchase"><button class="primary" id="buy-item">购买装备</button><button class="secondary hidden" id="sell-item">出售装备</button><p id="shop-feedback" role="status"></p></div></aside></div><footer class="shop-inventory"><div><strong>已装备 <span id="inventory-count">0 / 6</span></strong><small>点选装备可出售，返还原价70%</small></div><div id="shop-slots" class="shop-slots" aria-label="已装备的六个位置"></div></footer></div>
   </section>
@@ -1481,7 +1501,7 @@
       this.state.monsters = definitions.map(def => ({ id: this.nextId++, type: 'monster', kind: def[0], name: def[1],
         team: -1, x: def[2], y: def[3], homeX: def[2], homeY: def[3], r: def[0] === 'boss' ? 64 : def[0] === 'wolf' ? 24 : 32,
         hp: def[4], maxHp: def[4], attackDamage: def[5], goldReward: def[6], xpReward: def[7],
-        alive: def[0] !== 'boss', respawnTimer: def[0] === 'boss' ? 90 : 0,
+        alive: def[0] !== 'boss', respawnTimer: def[0] === 'boss' ? 30 : 0,
         respawnTime: def[0] === 'boss' ? 120 : 42, mode: 'idle', aggroId: null,
         attackCd: 0, attackRange: def[0] === 'boss' ? 160 : 75, speed: def[0] === 'wolf' ? 190 : 155,
         isBoss: def[0] === 'boss', skillCd: 8, warning: null, hurtTimer: 0,
@@ -3252,44 +3272,128 @@
       c.restore();
     }
 
-    minion(c, unit) {
-      if (unit.alive === false) return;
-      const r = unit.r || 10;
-      const x = unit.x;
-      const y = unit.y;
-      c.save();
-      ellipse(c, x + 2, y + 6, r + 3, r * .5, '#0b241a80');
-      const color = unit.team ? '#ca8d77' : '#7fb4ab';
-      if (unit.empowered) {
-        glow(c, x, y, r * 3, '#cee0a4', .16);
-        c.strokeStyle = '#d5dca0aa'; c.lineWidth = 1.5;
-        c.beginPath(); c.ellipse(x, y + 6, r + 8, r * .75, 0, 0, Math.PI * 2); c.stroke();
+    buildMinionSprite() {
+      // One shared transparent body sprite; animated limbs and team bands stay live.
+      // This is approximately 97 KiB RGBA, independent of the number of lane units.
+      const sprite = document.createElement('canvas');
+      sprite.width = 144; sprite.height = 168;
+      const c = sprite.getContext('2d');
+      c.scale(2, 2); c.translate(36, 44);
+      const skin = c.createLinearGradient(-12, -37, 18, 18);
+      skin.addColorStop(0, '#ffe45d'); skin.addColorStop(.42, '#f6cd3e');
+      skin.addColorStop(.8, '#e9af28'); skin.addColorStop(1, '#cf901d');
+      // The head flows directly into the round pear-shaped torso, without a neck.
+      c.beginPath(); c.moveTo(0, -39);
+      c.bezierCurveTo(-12, -39, -12, -29, -13, -23);
+      c.bezierCurveTo(-14, -17, -20, -9, -20, 1);
+      c.bezierCurveTo(-21, 10, -14, 14, 0, 14);
+      c.bezierCurveTo(14, 14, 21, 10, 20, 1);
+      c.bezierCurveTo(20, -9, 14, -17, 13, -23);
+      c.bezierCurveTo(12, -29, 12, -39, 0, -39);
+      c.closePath(); c.fillStyle = skin; c.fill();
+      c.strokeStyle = '#b68a2859'; c.lineWidth = .7; c.stroke();
+      const belly = c.createRadialGradient(-4, -3, 2, 2, 5, 24);
+      belly.addColorStop(0, '#fff1d8'); belly.addColorStop(.72, '#f4e3c4'); belly.addColorStop(1, '#dfcba8');
+      c.beginPath(); c.moveTo(0, -11);
+      c.bezierCurveTo(-13, -11, -17, -3, -16, 8);
+      c.bezierCurveTo(-12, 14, 12, 14, 16, 8);
+      c.bezierCurveTo(17, -3, 13, -11, 0, -11);
+      c.fillStyle = belly; c.fill();
+      // Large green eyes, a calm smile and a tiny glint reproduce the reference cues.
+      for (const ex of [-5.3, 5.3]) {
+        const iris = c.createRadialGradient(ex - .8, -30, .4, ex, -28.7, 4.5);
+        iris.addColorStop(0, '#9fce68'); iris.addColorStop(.65, '#70a84c'); iris.addColorStop(1, '#4f823d');
+        ellipse(c, ex, -28.7, 4.1, 4.6, iris);
+        c.strokeStyle = '#6a9a3e'; c.lineWidth = .65;
+        c.beginPath(); c.ellipse(ex, -28.7, 4.1, 4.6, 0, 0, Math.PI * 2); c.stroke();
+        ellipse(c, ex + .65, -28.5, 2.15, 3.1, '#1d3422');
+        ellipse(c, ex + .1, -29.8, .75, .9, '#e1f1ba');
       }
-      if (unit.cannon) {
-        c.save(); c.translate(x, y);
-        c.rotate(Math.atan2(unit.facingY || 0, unit.facingX ?? (unit.team ? -1 : 1)));
-        for (const wy of [-12, 12]) {
-          roundRect(c, -15, wy - 3, 27, 6, 3); c.fillStyle = '#253c32'; c.fill(); c.strokeStyle = '#9a9e75'; c.lineWidth = 1; c.stroke();
-          for (let wx = -10; wx <= 8; wx += 6) { c.strokeStyle = '#b9b38a'; c.beginPath(); c.moveTo(wx, wy - 2); c.lineTo(wx, wy + 2); c.stroke(); }
-        }
-        roundRect(c, -14, -9, 28, 18, 4); c.fillStyle = unit.team ? '#765347' : '#416b5b'; c.fill(); c.strokeStyle = color; c.lineWidth = 1.6; c.stroke();
-        ellipse(c, -2, 0, 10, 9, '#8c936b');
-        roundRect(c, 0, -4, 26, 8, 3); c.fillStyle = '#adb092'; c.fill(); c.strokeStyle = '#d0c79b'; c.stroke();
-        c.fillStyle = '#283d31'; c.fillRect(22, -3, 3, 6);
-        if (unit.empowered) { poly(c, [[-8, -13], [-8, -25], [6, -20]], '#a9c58e', '#e2dba1', 1); }
-        c.restore();
-      } else {
-        poly(c, [[x, y - r], [x + r, y], [x + r * .65, y + r * .7],
-          [x - r * .65, y + r * .7], [x - r, y]], unit.team ? '#704a3d' : '#345b51', color, 1.6);
-        c.strokeStyle = unit.empowered ? '#e2dfaa' : color; c.lineWidth = 2;
-        c.beginPath(); c.moveTo(x - r * .4, y); c.lineTo(x + r * .4, y); c.stroke();
-        ellipse(c, x, y - 3, r * .35, r * .3, unit.team ? '#d6a88c' : '#a2c8b6');
-        if (unit.empowered) poly(c, [[x - 4, y - r - 3], [x, y - r - 9], [x + 4, y - r - 3]], '#d8d9a0');
-      }
-      if (unit.hp < unit.maxHp) this.healthBar(c, unit, 25, r + 8);
-      c.restore();
+      c.strokeStyle = '#856327'; c.lineWidth = .85; c.lineCap = 'round';
+      c.beginPath(); c.moveTo(-4.8, -20.6); c.quadraticCurveTo(0, -18.8, 4.8, -20.6); c.stroke();
+      c.strokeStyle = '#e9b43666'; c.lineWidth = .7;
+      c.beginPath(); c.moveTo(-5, -19); c.quadraticCurveTo(0, -17.9, 5, -19); c.stroke();
+      return sprite;
     }
 
+    minion(c, unit, time = 0) {
+      if (unit.alive === false) return;
+      if (!this.minionSprite) this.minionSprite = this.buildMinionSprite();
+      const x = unit.x, y = unit.y;
+      const cannon = !!unit.cannon;
+      const ranged = !!unit.ranged && !cannon;
+      const scale = cannon ? .84 : ranged ? .77 : .74;
+      const step = Math.sin(time * 8.8 + (unit.id || 0) * .61);
+      const ratio = clamp((unit.attackCd || 0) / (unit.attackInterval || 1), 0, 1);
+      const attack = ratio > .55 ? Math.sin((1 - ratio) / .45 * Math.PI) : 0;
+      const sway = step * .035;
+      const bob = Math.abs(step) * .8;
+      const color = unit.team ? '#eb927c' : '#80cdd5';
+      c.save();
+      ellipse(c, x + 1, y + 19, cannon ? 21 : 18, 7, '#09241b80');
+      c.strokeStyle = color; c.lineWidth = 1.8;
+      c.beginPath(); c.ellipse(x, y + 19, cannon ? 22 : 19, 7.7, 0, 0, Math.PI * 2); c.stroke();
+      if (unit.empowered) {
+        glow(c, x, y - 4, 39, '#d4df9c', .15);
+        c.strokeStyle = '#d5dfa399'; c.lineWidth = 1.3;
+        c.beginPath(); c.ellipse(x, y + 19, cannon ? 27 : 24, 10.5, 0, 0, Math.PI * 2); c.stroke();
+      }
+      c.save(); c.translate(x, y - bob); c.rotate(sway);
+      c.scale((unit.facingX ?? (unit.team ? -1 : 1)) < 0 ? -scale : scale, scale);
+      // Slender yellow legs and dark feet move independently of the cached body.
+      for (const side of [-1, 1]) {
+        const legX = side * 9;
+        const stride = step * side * 2.3;
+        const legSkin = c.createLinearGradient(legX - 4, 11, legX + 4, 26);
+        legSkin.addColorStop(0, '#eab42c'); legSkin.addColorStop(.65, '#dca629'); legSkin.addColorStop(1, '#77713b');
+        c.beginPath(); c.moveTo(legX - 4, 10);
+        c.quadraticCurveTo(legX - 2 + stride, 19, legX - 3 + stride, 24);
+        c.lineTo(legX + 3 + stride, 25); c.quadraticCurveTo(legX + 4 + stride, 18, legX + 4, 10);
+        c.closePath(); c.fillStyle = legSkin; c.fill();
+        ellipse(c, legX + stride + 1.5, 25, 6.3, 2.5, '#565438');
+        c.strokeStyle = color; c.lineWidth = 2.6;
+        c.beginPath(); c.moveTo(legX + stride - 2, 21); c.lineTo(legX + stride + 3, 21); c.stroke();
+      }
+      // Long, relaxed arms; the leading hand waves forward during an attack.
+      for (const side of [-1, 1]) {
+        const reach = side > 0 ? attack : attack * .18;
+        const handX = side * (20 + reach * 6 + step * .7);
+        const handY = 16 - reach * (ranged ? 26 : 17) + side * step;
+        const armSkin = c.createLinearGradient(side * 15, -14, handX, handY);
+        armSkin.addColorStop(0, '#f4c73b'); armSkin.addColorStop(.73, '#e0a52a'); armSkin.addColorStop(1, '#6d6636');
+        c.strokeStyle = '#b88d2855'; c.lineWidth = 7; c.lineCap = 'round';
+        c.beginPath(); c.moveTo(side * 15, -14);
+        c.bezierCurveTo(side * 21, -6, side * 24, 3 - reach * 9, handX, handY); c.stroke();
+        c.strokeStyle = armSkin; c.lineWidth = 5.6; c.stroke();
+        c.strokeStyle = color; c.lineWidth = 3;
+        c.beginPath(); c.moveTo(side * 19.5, -4); c.lineTo(side * 21, .5); c.stroke();
+        ellipse(c, handX, handY + 1.5, 3.1, 4.1, '#535136');
+        c.strokeStyle = '#777043'; c.lineWidth = .6;
+        c.beginPath(); c.moveTo(handX - 1, handY + 2); c.lineTo(handX - 1, handY + 4); c.stroke();
+      }
+      c.drawImage(this.minionSprite, -36, -44, 72, 84);
+      if (ranged) {
+        // A tiny side pouch distinguishes ranged units without covering the belly.
+        roundRect(c, -21, 1, 6, 8, 2); c.fillStyle = '#7d7650'; c.fill();
+        c.strokeStyle = color; c.lineWidth = 1.5; c.stroke();
+        ellipse(c, -18, 2, 1.4, 1.4, '#d8d9a0');
+      } else if (cannon) {
+        // Cannon units are still yellow creatures; there is no vehicle body or wheels.
+        c.save(); c.translate(17, -13); c.rotate(-.14 + attack * .1);
+        roundRect(c, -2, -4, 13, 8, 2); c.fillStyle = '#6d7358'; c.fill();
+        c.strokeStyle = '#c0bd87'; c.lineWidth = 1.1; c.stroke();
+        roundRect(c, 6, -3, 13, 6, 2); c.fillStyle = '#929878'; c.fill();
+        c.fillStyle = '#344b3d'; c.fillRect(16, -2.5, 2, 5);
+        if (attack > .7) glow(c, 21, 0, 9, '#f2d68e', .45);
+        c.restore();
+      }
+      if (unit.empowered) {
+        poly(c, [[-3, -42], [0, -47], [3, -42], [0, -39]], '#dce0a0', '#f3e8bd', .7);
+      }
+      c.restore();
+      if (unit.hp < unit.maxHp || cannon) this.healthBar(c, unit, cannon ? 42 : 36, cannon ? 41 : 38);
+      c.restore();
+    }
     effect(c, e, time = 0, entitiesById = null) {
       if (!(e.life > 0)) return;
       if (e.followsId != null && entitiesById?.has(e.followsId)) {
@@ -3638,7 +3742,7 @@
         const unit = actor.unit;
         if (actor.type === 'structure') this.structure(c, unit, time);
         else if (actor.type === 'monster') this.monster(c, unit, time, unit.id === targetId);
-        else if (actor.type === 'minion') this.minion(c, unit);
+        else if (actor.type === 'minion') this.minion(c, unit, time);
         else if (actor.type === 'summon') this.summon(c, unit, entitiesById, time);
         else this.hero(c, unit, player, actor.index, time);
       }
@@ -3683,7 +3787,7 @@
   let now=0,last=0,hudElapsed=0,toastUntil=0,mouseAttack=false,buttonAttack=false,attackPointer=null,joyPointer=null;
   let pointerAim={x:1800,y:1800}, mouseClient=null, hasAim=false, skillAim=false, aimReleaseFrames=0, pointerType='mouse';
   let navigationTarget=null,lastMessage='',wasDead=false,previousPoints=1,guideShown=false;
-  let shopCategory='recommended',selectedItemId=null,selectedSlot=null,inventorySignature='';
+  let shopCategory='recommended',selectedItemId=null,selectedSlot=null,inventorySignature='',hudExpanded=false;
   const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
   const timeText=seconds=>`${Math.floor(Math.max(0,seconds)/60).toString().padStart(2,'0')}:${Math.floor(Math.max(0,seconds)%60).toString().padStart(2,'0')}`;
   const alive=u=>u&&u.alive!==false&&u.hp>0;
@@ -3692,11 +3796,12 @@
   const inventory=()=>engine.state.player.inventory||[];
   function element(tag,className,text){const node=document.createElement(tag);if(className)node.className=className;if(text!==undefined)node.textContent=text;return node;}
   function toast(message,duration=3200){$('toast').textContent=message;$('toast').classList.add('show');toastUntil=now+duration;}
-  function resize(){renderer.resize(innerWidth,innerHeight,Math.min(devicePixelRatio||1,2));}
+  function resize(){const viewport=window.visualViewport;const height=Math.round(viewport?.height||innerHeight);$('game').style.setProperty('--viewport-height',`${height}px`);renderer.resize(innerWidth,height,Math.min(devicePixelRatio||1,2));}
+  function setHudExpanded(expanded){hudExpanded=Boolean(expanded);$('player-extra').classList.toggle('hidden',!hudExpanded);$('hud-details-btn').setAttribute('aria-expanded',String(hudExpanded));$('hud-details-btn').textContent=hudExpanded?'收起':'详情';}
   function hideScreens(){screens.forEach(id=>$(id).classList.add('hidden'));}
   function showMode(next){hideScreens();mode=next;const id={start:'start-screen',paused:'pause-screen',help:'help-screen',shop:'shop-screen',ended:'result-screen'}[next];if(id)$(id).classList.remove('hidden');}
   function clearInput(){
-    keys.clear();touchMove.x=touchMove.y=input.moveX=input.moveY=0;input.attack=mouseAttack=buttonAttack=false;
+    setHudExpanded(false);keys.clear();touchMove.x=touchMove.y=input.moveX=input.moveY=0;input.attack=mouseAttack=buttonAttack=false;
     input.skills.fill(false);input.heal=false;input.moveTarget=null;joyPointer=attackPointer=null;skillAim=false;aimReleaseFrames=0;
     skillPointers.forEach(pointer=>pointer.id=null);$('joystick-thumb').style.transform='';all('.pressed').forEach(node=>node.classList.remove('pressed'));
   }
@@ -3730,8 +3835,9 @@
   $('help-btn').onclick=openHelp;$('start-help').onclick=openHelp;$('close-help').onclick=closeHelp;
   $('shop-btn').onclick=()=>openShop();$('inventory-shop').onclick=()=>openShop();$('paused-shop-btn').onclick=()=>openShop();$('close-shop').onclick=closeShop;
   $('back-menu').onclick=()=>{clearInput();navigationTarget=null;showMode('start');};
+  $('hud-details-btn').onclick=()=>{if(mode==='playing'||mode==='paused')setHudExpanded(!hudExpanded);};
   $('fullscreen-btn').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();else toast('可直接横屏游玩，当前浏览器未提供全屏入口。');}catch{toast('当前浏览器暂时无法全屏，可直接继续游玩。');}};
-  addEventListener('resize',resize);resize();
+  addEventListener('resize',resize);window.visualViewport?.addEventListener('resize',resize);resize();
   document.addEventListener('visibilitychange',()=>{if(document.hidden)backgroundPause();});addEventListener('blur',backgroundPause);
   function upgrade(index){
     if(!['playing','paused'].includes(mode))return;
@@ -3759,7 +3865,7 @@
   addEventListener('keyup',event=>keys.delete(event.key.toLowerCase()));
   canvas.addEventListener('contextmenu',event=>event.preventDefault());
   canvas.addEventListener('pointermove',event=>{if(event.pointerType==='mouse'){pointerType='mouse';mouseClient={x:event.clientX,y:event.clientY};hasAim=true;}});
-  canvas.addEventListener('pointerdown',event=>{if(mode==='playing'&&event.pointerType==='mouse'&&event.button===0){pointerType='mouse';mouseAttack=true;hasAim=true;mouseClient={x:event.clientX,y:event.clientY};canvas.setPointerCapture(event.pointerId);}});
+  canvas.addEventListener('pointerdown',event=>{if(mode==='playing')setHudExpanded(false);if(mode==='playing'&&event.pointerType==='mouse'&&event.button===0){pointerType='mouse';mouseAttack=true;hasAim=true;mouseClient={x:event.clientX,y:event.clientY};canvas.setPointerCapture(event.pointerId);}});
   for(const name of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(name,()=>mouseAttack=false);
   const pad=$('joystick');
   function updateJoystick(event){const rect=pad.getBoundingClientRect(),radius=rect.width*.34;let dx=event.clientX-rect.left-rect.width/2,dy=event.clientY-rect.top-rect.height/2;const length=Math.hypot(dx,dy);if(length>radius){dx*=radius/length;dy*=radius/length;}touchMove.x=dx/radius;touchMove.y=dy/radius;$('joystick-thumb').style.transform=`translate(${dx}px,${dy}px)`;}
@@ -3779,7 +3885,7 @@
     for(const name of ['pointercancel','lostpointercapture'])button.addEventListener(name,event=>{if(pointer.id===event.pointerId){pointer.id=null;button.classList.remove('pressed');skillAim=false;if(pointerType==='touch')hasAim=false;}});
   });
   mini.addEventListener('pointerdown',event=>{
-    if(mode!=='playing'||!alive(engine.state.player))return;
+    if(mode!=='playing'||!alive(engine.state.player))return;setHudExpanded(false);
     const rect=mini.getBoundingClientRect(),s=engine.state;
     input.moveTarget={x:clamp((event.clientX-rect.left)/rect.width,0,1)*(s.width||3600),y:clamp((event.clientY-rect.top)/rect.height,0,1)*(s.height||3600)};
     navigationTarget={...input.moveTarget};toast('正在前往标记点，手动移动可取消。',2200);event.preventDefault();
@@ -3839,7 +3945,7 @@
     const buffs=[];for(const [field,label,className] of [['redBuffTimer','红增益','red-buff'],['blueBuffTimer','蓝增益','blue-buff'],['bossBuffTimer','大龙增益','']])if(p[field]>0)buffs.push(element('span','buff-chip '+className,`${label} ${Math.ceil(p[field])}秒`));$('buff-status').replaceChildren(...buffs);
     const summons=(s.summons||[]).filter(unit=>alive(unit)&&unit.ownerId===p.id).map(unit=>`${unit.name} ${Math.ceil(unit.life)}秒`);$('summon-status').textContent=(p.recallTimer>0?`回城 ${p.recallTimer.toFixed(1)}秒 · `:'')+(p.stunTimer>0?'被控制 · ':p.silenceTimer>0?'沉默中 · ':'')+(p.attackBuffTimer>0?'攻速提升 · ':'')+(summons.join(' / ')||'挥扇御风 · 召唤双将');
     const signature=inventory().join('|');if(signature!==inventorySignature||!$('hud-inventory').children.length){renderEquipment($('hud-inventory'));inventorySignature=signature;}
-    const boss=(s.monsters||[]).find(monster=>monster.kind==='boss');const liveBoss=alive(boss);const wait=Number.isFinite(boss?.respawnTimer)?boss.respawnTimer:Math.max(0,90-s.time);$('boss-status').textContent=liveBoss?`${Math.ceil(boss.hp)} / ${Math.ceil(boss.maxHp)}`:`${timeText(wait)} 后现身`;$('boss-hp').style.width=liveBoss?`${clamp(boss.hp/boss.maxHp,0,1)*100}%`:'0%';$('boss-note').textContent=liveBoss?'击败获得全队增益':'争夺大龙，强化兵线';
+    const boss=(s.monsters||[]).find(monster=>monster.kind==='boss');const liveBoss=alive(boss);const wait=Number.isFinite(boss?.respawnTimer)?boss.respawnTimer:Math.max(0,30-s.time);$('boss-status').textContent=liveBoss?`${Math.ceil(boss.hp)} / ${Math.ceil(boss.maxHp)}`:`${timeText(wait)} 后现身`;$('boss-hp').style.width=liveBoss?`${clamp(boss.hp/boss.maxHp,0,1)*100}%`:'0%';$('boss-note').textContent=liveBoss?'击败获得全队增益':'争夺大龙，强化兵线';
     const towerCounts=[0,1].map(team=>s.structures.filter(unit=>unit.team===team&&unit.type==='tower'&&alive(unit)).length);if($('compact-towers')){$('compact-towers').textContent=`塔 ${towerCounts[0]} : ${towerCounts[1]}`;$('compact-towers').title=`我方剩余${towerCounts[0]}座塔，敌方剩余${towerCounts[1]}座塔`;}
     navigationTarget=p.moveTarget?{...p.moveTarget}:input.moveTarget?{...input.moveTarget}:null;if(navigationTarget&&Math.hypot(p.x-navigationTarget.x,p.y-navigationTarget.y)<25)navigationTarget=null;$('nav-status').textContent=navigationTarget?'自动前往中 · 移动取消':'点地图 · 自动前往';
     if(s.message&&s.message!==lastMessage&&mode==='playing'){if(lastMessage)toast(s.message,2400);lastMessage=s.message;}
@@ -3867,6 +3973,7 @@
       input.moveX=touchMove.x+(keys.has('d')||keys.has('arrowright')?1:0)-(keys.has('a')||keys.has('arrowleft')?1:0);input.moveY=touchMove.y+(keys.has('s')||keys.has('arrowdown')?1:0)-(keys.has('w')||keys.has('arrowup')?1:0);
       const length=Math.hypot(input.moveX,input.moveY);if(length>1){input.moveX/=length;input.moveY/=length;}if(length>.05){input.moveTarget=null;navigationTarget=null;}
       if(hasAim&&!skillAim&&mouseClient&&pointerType==='mouse')pointerAim=renderer.screenToWorld(mouseClient.x,mouseClient.y);if(!hasAim&&!skillAim)autoAim();input.aimX=pointerAim.x;input.aimY=pointerAim.y;input.attack=mouseAttack||buttonAttack||keys.has('j')||keys.has(' ');
+      if(length>.05||input.attack||input.skills.some(Boolean)||input.heal)setHudExpanded(false);
       engine.update(dt,input);input.skills.fill(false);input.heal=false;input.moveTarget=null;
       if(aimReleaseFrames>0&&--aimReleaseFrames===0){skillAim=false;if(pointerType==='touch')hasAim=false;}
       if(safeWinner(engine.state.winner))finish();
